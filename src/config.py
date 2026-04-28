@@ -38,6 +38,13 @@ def read_config_lines(config_path: str) -> list[str]:
     return lines
 
 
+def validate_required_keys(config: dict[str, ConfigValue]) -> None:
+    missing = REQUIRED_KEYS - set(config)
+
+    if missing:
+        raise ValueError(f"{missing} parameters are missing in config file!")
+
+
 def parse_config(lines: list[str]) -> Config:
     config: dict[str, ConfigValue] = {}
 
@@ -75,22 +82,6 @@ def split_config_line(line: str) -> tuple[str, str]:
         raise ValueError(f"Empty value detected for parameter '{key}'!")
 
     return key, value
-
-
-def parse_config_value(key: str, value: str) -> ConfigValue:
-    if key in {"WIDTH", "HEIGHT"}:
-        return parse_positive_int(key, value)
-
-    if key in {"ENTRY", "EXIT"}:
-        return parse_coords(key, value)
-
-    if key == "OUTPUT_FILE":
-        return parse_output_file(value)
-
-    if key == "PERFECT":
-        return parse_bool(value)
-
-    raise ValueError(f"Unknown config parameter was given: '{key}'")
 
 
 def parse_positive_int(key: str, value: str) -> int:
@@ -136,11 +127,20 @@ def parse_bool(value: str) -> bool:
     raise ValueError("'PERFECT' parameter must be a boolean!")
 
 
-def validate_required_keys(config: dict[str, ConfigValue]) -> None:
-    missing = REQUIRED_KEYS - set(config)
+def parse_config_value(key: str, value: str) -> ConfigValue:
+    if key in {"WIDTH", "HEIGHT"}:
+        return parse_positive_int(key, value)
 
-    if missing:
-        raise ValueError(f"{missing} parameters are missing in config file!")
+    if key in {"ENTRY", "EXIT"}:
+        return parse_coords(key, value)
+
+    if key == "OUTPUT_FILE":
+        return parse_output_file(value)
+
+    if key == "PERFECT":
+        return parse_bool(value)
+
+    raise ValueError(f"Unknown config parameter was given: '{key}'")
 
 
 def create_maze(config: Config) -> Maze:
@@ -157,5 +157,8 @@ def create_maze(config: Config) -> Maze:
 def load_maze_from_config(config_path: str) -> Maze:
     lines = read_config_lines(config_path)
     config = parse_config(lines)
+
+    if config_path == config["OUTPUT_FILE"]:
+        raise ValueError("Config file and output file cannot be the same!")
 
     return create_maze(config)

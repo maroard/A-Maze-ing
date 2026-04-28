@@ -15,7 +15,6 @@ class Maze():
 
         self._check_config()
         self.init_maze()
-        self.pattern_coords = self._get_pattern_coords()
 
     def __str__(self) -> str:
         lines = []
@@ -58,10 +57,6 @@ class Maze():
             for column in range(self.width):
                 line.append(Cell())
             self.grid.append(line)
-
-    def _get_pattern_coords(self) -> list[tuple[int, int]]:
-        from maze.pattern import get_42_pattern_coords
-        return get_42_pattern_coords(self)
 
     def is_inside(self, x: int, y: int) -> bool:
         return not (

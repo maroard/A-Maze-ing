@@ -1,5 +1,5 @@
+from enum import Enum
 from maze.maze import Maze
-from maze.side import Side
 
 
 PATTERN_42: tuple[str, ...] = (
@@ -11,47 +11,101 @@ PATTERN_42: tuple[str, ...] = (
 )
 
 
-def get_42_pattern_coords(maze: Maze) -> list[tuple[int, int]]:
-    pattern_coords: list[tuple[int, int]] = []
-
-    pattern_width = len(PATTERN_42[0])
-    pattern_height = len(PATTERN_42)
-
-    if maze.width < pattern_width + 2 or maze.height < pattern_height + 2:
-        print("Warning: maze too small to place 42 pattern.")
-        print()
-
-    else:
-        start_x = (maze.width - pattern_width) // 2
-        start_y = (maze.height - pattern_height) // 2
-
-        for line in range(pattern_height):
-            for column in range(pattern_width):
-                if PATTERN_42[line][column] == "1":
-                    pattern_coords.append((start_x + column,
-                                           start_y + line))
-
-    return pattern_coords
+class PatternPosition(Enum):
+    TOP_LEFT = "top_left"
+    TOP = "top"
+    TOP_RIGHT = "top_right"
+    MIDDLE_LEFT = "middle_left"
+    CENTER = "center"
+    MIDDLE_RIGHT = "middle_right"
+    BOTTOM_LEFT = "bottom_left"
+    BOTTOM = "bottom"
+    BOTTOM_RIGHT = "bottom_right"
 
 
-def place_42_pattern(maze: Maze) -> None:
-    for x, y in maze.pattern_coords:
-        maze.get_cell(x, y).is_pattern = True
+class Pattern:
+    def __init__(self,
+                 position: PatternPosition = PatternPosition.CENTER) -> None:
+        self.shape = PATTERN_42
+        self.position = position
+        self.width = len(self.shape[0])
+        self.height = len(self.shape)
+        self.coords: list[tuple[int, int]] = []
 
+    def get_start_coords(self, maze: Maze) -> tuple[int, int]:
+        if self.position is PatternPosition.TOP_LEFT:
+            start_x = 0
+            start_y = 0
 
-def get_solid_42_pattern_coords(maze: Maze) -> list[tuple[int, int]]:
-    pattern_coords = maze.pattern_coords
+        elif self.position is PatternPosition.TOP:
+            start_x = (maze.width - self.width) // 2
+            start_y = 0
 
-    render_pattern_coords: list[tuple[int, int]] = []
+        elif self.position is PatternPosition.TOP_RIGHT:
+            start_x = maze.width - self.width
+            start_y = 0
 
-    for x, y in pattern_coords:
-        render_pattern_coords.append((x * 2 + 1, y * 2 + 1))
+        elif self.position is PatternPosition.MIDDLE_LEFT:
+            start_x = 0
+            start_y = (maze.height - self.height) // 2
 
-        for side in Side:
-            dx, dy = side.delta()
-            ax, ay = (x, y) + (dx, dy)
+        elif self.position is PatternPosition.CENTER:
+            start_x = (maze.width - self.width) // 2
+            start_y = (maze.height - self.height) // 2
 
-            if (ax, ay) in pattern_coords:
-                render_pattern_coords.append((ax * 2 + 1, ay * 2 + 1))
+        elif self.position is PatternPosition.MIDDLE_RIGHT:
+            start_x = maze.width - self.width
+            start_y = (maze.height - self.height) // 2
 
-    return render_pattern_coords
+        elif self.position is PatternPosition.BOTTOM_LEFT:
+            start_x = 0
+            start_y = maze.height - self.height
+
+        elif self.position is PatternPosition.BOTTOM:
+            start_x = (maze.width - self.width) // 2
+            start_y = maze.height - self.height
+
+        elif self.position is PatternPosition.BOTTOM_RIGHT:
+            start_x = maze.width - self.width
+            start_y = maze.height - self.height
+
+        else:
+            raise ValueError(f"Unknown pattern position: {self.position}")
+
+        return start_x, start_y
+
+    def get_coords(self, maze: Maze) -> list[tuple[int, int]]:
+        pattern_coords: list[tuple[int, int]] = []
+
+        start_x, start_y = self.get_start_coords(maze)
+
+        for line in range(self.height):
+            for column in range(self.width):
+                if self.shape[line][column] == "1":
+                    pattern_coords.append((start_x + column, start_y + line))
+
+        return pattern_coords
+
+    def can_place(self, maze: Maze) -> bool:
+        if maze.width < self.width or maze.height < self.height:
+            print("Warning: maze too small to place 42 pattern.")
+            return False
+
+        pattern_coords = set(self.get_coords(maze))
+
+        if maze.entry in pattern_coords or maze.exit in pattern_coords:
+            return False
+
+        return True
+
+    def place(self, maze: Maze) -> None:
+        self.coords = self.get_coords(maze)
+
+        for x, y in self.coords:
+            maze.get_cell(x, y).is_pattern = True
+
+    def clear(self, maze: Maze) -> None:
+        for x, y in self.coords:
+            maze.get_cell(x, y).is_pattern = False
+
+        self.coords = []

@@ -1,6 +1,6 @@
 import sys
 from config import load_maze_from_config
-from terminal_app.maze_terminal_app import MazeTerminalApp
+from terminal_app.main_menu.maze_terminal_app import MazeTerminalApp
 # from renderer import get_render
 
 

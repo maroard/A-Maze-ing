@@ -62,7 +62,7 @@ class TerminalMenu(ABC):
 
     @abstractmethod
     def run(self) -> None:
-        self.running = True
+        pass
 
     def stop(self) -> None:
         self.running = False

@@ -11,7 +11,6 @@ from terminal_app.colors_menu import ColorsMenu
 class MazeTerminalApp(TerminalMenu):
     def __init__(self, maze: Maze) -> None:
         self.maze = maze
-        self.running = False
         self.renderer = MazeRenderer(maze)
 
         self.show_path = False
@@ -37,7 +36,9 @@ class MazeTerminalApp(TerminalMenu):
             system("clear")
             print(self.renderer.get_render(self.show_path))
 
-            command = input(self.get_display("Main Menu"))
+            command = input(self.get_display(
+                "Main Menu", self.maze.width * 4)
+            )
 
             command_data = self.commands.get(command)
             if command_data is None:

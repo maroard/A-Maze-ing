@@ -11,7 +11,6 @@ if TYPE_CHECKING:
 
 class ThemeMenu(TerminalMenu):
     def __init__(self, app: "MazeTerminalApp") -> None:
-        self.running = False
         self.app = app
 
         self.commands = {
@@ -31,6 +30,14 @@ class ThemeMenu(TerminalMenu):
                   "Clean light"),
             "8": (lambda: self.set_theme(RenderTheme.grayscale),
                   "Grayscale"),
+            "9": (lambda: self.set_theme(RenderTheme.ocean),
+                  "Ocean"),
+            "10": (lambda: self.set_theme(RenderTheme.gold_mine),
+                   "Gold mine"),
+            "11": (lambda: self.set_theme(RenderTheme.candy),
+                   "Candy"),
+            "12": (lambda: self.set_theme(RenderTheme.midnight_sakura),
+                   "Midnight Sakura"),
             "0": (self.stop, "Back"),
         }
 
@@ -41,7 +48,9 @@ class ThemeMenu(TerminalMenu):
             system("clear")
             print(self.app.renderer.get_render(self.app.show_path))
 
-            command = input(self.get_display("Theme Menu"))
+            command = input(self.get_display(
+                "Theme Menu", self.app.maze.width * 4)
+            )
 
             command_data = self.commands.get(command)
             if command_data is None:

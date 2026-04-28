@@ -1,4 +1,5 @@
 from maze.maze import Maze
+from maze.side import Side
 
 
 PATTERN_42: tuple[str, ...] = (
@@ -36,3 +37,21 @@ def get_42_pattern_coords(maze: Maze) -> list[tuple[int, int]]:
 def place_42_pattern(maze: Maze) -> None:
     for x, y in maze.pattern_coords:
         maze.get_cell(x, y).is_pattern = True
+
+
+def get_solid_42_pattern_coords(maze: Maze) -> list[tuple[int, int]]:
+    pattern_coords = maze.pattern_coords
+
+    render_pattern_coords: list[tuple[int, int]] = []
+
+    for x, y in pattern_coords:
+        render_pattern_coords.append((x * 2 + 1, y * 2 + 1))
+
+        for side in Side:
+            dx, dy = side.delta()
+            ax, ay = (x, y) + (dx, dy)
+
+            if (ax, ay) in pattern_coords:
+                render_pattern_coords.append((ax * 2 + 1, ay * 2 + 1))
+
+    return render_pattern_coords

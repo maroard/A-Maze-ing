@@ -6,13 +6,44 @@ class TerminalMenu(ABC):
         self.running = False
         self.commands = {}
 
-    def get_display(self, menu: str) -> str:
-        width = 40
+    def get_display(self, menu: str, width: int = 42) -> str:
+        width = max(width, 42)
+
+        left_width = width // 2
+        right_width = width - left_width
+
+        items = [(key, value) for key, value in self.commands.items()
+                 if key != "0"]
 
         commands_label = ""
-        for key, value in self.commands.items():
-            text = f" {key}. {value[1]}"
-            commands_label += f"│{text:<{width}}│\n"
+
+        if len(items) > 9:
+            middle = (len(items) + 1) // 2
+            left_items = items[:middle]
+            right_items = items[middle:]
+
+            for i in range(middle):
+                left_key, left_value = left_items[i]
+                left_text = f" {left_key}. {left_value[1]}"
+
+                right_text = ""
+                if i < len(right_items):
+                    right_key, right_value = right_items[i]
+                    right_text = f" {right_key}. {right_value[1]}"
+
+                commands_label += (
+                    f"│{left_text:<{left_width}}"
+                    f"{right_text:<{right_width}}│\n"
+                )
+        else:
+            for key, value in items:
+                text = f" {key}. {value[1]}"
+                commands_label += f"│{text:<{width}}│\n"
+
+        commands_label += (
+            f"│{'':{width}}│\n"
+            f"│{' 0. ' + self.commands['0'][1]:<{width}}│\n"
+        )
 
         return (
             "\n"
@@ -32,10 +63,6 @@ class TerminalMenu(ABC):
     @abstractmethod
     def run(self) -> None:
         self.running = True
-        # while self.running:
-        #     self.display()
-        #     command = input(self.get_prompt())
-        #     self.execute_command(command)
 
     def stop(self) -> None:
         self.running = False

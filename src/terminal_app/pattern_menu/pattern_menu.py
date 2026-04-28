@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 from terminal_app.terminal_menu import TerminalMenu
-from os import system
+from terminal_app.pattern_menu.pattern_position_menu import PatternPositionMenu
 
 if TYPE_CHECKING:
     from terminal_app.main_menu.maze_terminal_app import MazeTerminalApp
@@ -11,9 +11,10 @@ class PatternMenu(TerminalMenu):
         self.app = app
 
         self.commands = {
-            "1": (None, "Change pattern position"),
-            "2": (self._toggle_solid_pattern,
+            "1": (self._toggle_solid_pattern,
                   "Switch 42 pattern style: solid/dotted "),
+            "2": (self._pattern_position_menu,
+                  "Change pattern position"),
             "0": (self.stop, "Back")
         }
 
@@ -21,23 +22,14 @@ class PatternMenu(TerminalMenu):
         self.running = True
 
         while self.running:
-            system("clear")
-            print(self.app.renderer.get_render(
-                    self.app.show_path,
-                    self.app.show_solid_pattern
-                ))
+            self.app.render_to_terminal("Pattern Menu", self.commands)
 
-            command = input(self.get_display(
-                "Pattern Menu", self.app.maze.width * 4)
-            )
+            command = input()
 
             command_data = self.commands.get(command)
             if command_data is None:
-                system("clear")
-                print(self.app.renderer.get_render(
-                    self.app.show_path,
-                    self.app.show_solid_pattern
-                ))
+                self.app.render_to_terminal("Pattern Menu", self.commands)
+
                 continue
 
             action = command_data[0]
@@ -45,3 +37,7 @@ class PatternMenu(TerminalMenu):
 
     def _toggle_solid_pattern(self) -> None:
         self.app.show_solid_pattern = not self.app.show_solid_pattern
+
+    def _pattern_position_menu(self) -> None:
+        menu = PatternPositionMenu(self.app)
+        menu.run()

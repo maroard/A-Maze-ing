@@ -1,7 +1,6 @@
 from typing import Literal, TYPE_CHECKING
 from terminal_app.terminal_menu import TerminalMenu
 from rendering.render_theme import AnsiColor
-from os import system
 
 if TYPE_CHECKING:
     from terminal_app.main_menu.maze_terminal_app import MazeTerminalApp
@@ -60,24 +59,18 @@ class ObjectColorMenu(TerminalMenu):
         self.running = True
 
         while self.running:
-            system("clear")
-            print(self.app.renderer.get_render(
-                    self.app.show_path,
-                    self.app.show_solid_pattern
-                ))
-
-            command = input(self.get_display(
+            self.app.render_to_terminal(
                 f"Choose {self.object_target} color",
-                self.app.maze.width * 4)
-            )
+                self.commands, True)
+
+            command = input()
 
             command_data = self.commands.get(command)
             if command_data is None:
-                system("clear")
-                print(self.app.renderer.get_render(
-                    self.app.show_path,
-                    self.app.show_solid_pattern
-                ))
+                self.app.render_to_terminal(
+                    f"Choose {self.object_target} color",
+                    self.commands, True)
+
                 continue
 
             action = command_data[0]

@@ -6,18 +6,24 @@ class TerminalMenu(ABC):
         self.running = False
         self.commands = {}
 
-    def get_display(self, menu: str, width: int = 42) -> str:
+    def get_menu_display(
+        self,
+        menu_title: str,
+        content: dict,
+        width: int = 42,
+        two_columns: bool = False
+    ) -> str:
         width = max(width, 42)
 
         left_width = width // 2
         right_width = width - left_width
 
-        items = [(key, value) for key, value in self.commands.items()
+        items = [(key, value) for key, value in content.items()
                  if key != "0"]
 
-        commands_label = ""
+        content_label = ""
 
-        if len(items) > 9:
+        if two_columns:
             middle = (len(items) + 1) // 2
             left_items = items[:middle]
             right_items = items[middle:]
@@ -31,18 +37,18 @@ class TerminalMenu(ABC):
                     right_key, right_value = right_items[i]
                     right_text = f" {right_key}. {right_value[1]}"
 
-                commands_label += (
+                content_label += (
                     f"│{left_text:<{left_width}}"
                     f"{right_text:<{right_width}}│\n"
                 )
         else:
             for key, value in items:
                 text = f" {key}. {value[1]}"
-                commands_label += f"│{text:<{width}}│\n"
+                content_label += f"│{text:<{width}}│\n"
 
-        commands_label += (
+        content_label += (
             f"│{'':{width}}│\n"
-            f"│{' 0. ' + self.commands['0'][1]:<{width}}│\n"
+            f"│{' 0. ' + content['0'][1]:<{width}}│\n"
         )
 
         return (
@@ -52,12 +58,12 @@ class TerminalMenu(ABC):
             f"│{'A-Maze-ing':^{width}}│\n"
             f"│{'':{width}}│\n"
             f"├{'─' * width}┤\n"
-            f"│{menu:^{width}}│\n"
+            f"│{menu_title:^{width}}│\n"
             f"├{'─' * width}┤\n"
-            f"{commands_label}"
+            f"{content_label}"
             f"╰{'─' * width}╯\n"
             "\n"
-            f"Choice? (0-{len(self.commands) - 1}): "
+            f"Choice? (0-{len(content) - 1}): "
         )
 
     @abstractmethod

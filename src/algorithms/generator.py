@@ -18,8 +18,15 @@ class MazeGenerator():
 
         try:
             if not self.pattern.can_place(self.maze):
-                raise ValueError("Warning:")
-            self.pattern.place(self.maze)
+                raise ValueError(
+                    "The entry or exit cell is inside the 42 pattern."
+                    "\n"
+                    "Please choose different coordinates."
+                )
+        except ValueError as error:
+            print(f"Invalid configuration:\n{error}")
+
+        self.pattern.place(self.maze)
         self._generate_dfs(render_on_frame)
 
     def _generate_dfs(

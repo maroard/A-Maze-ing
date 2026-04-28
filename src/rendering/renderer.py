@@ -211,7 +211,7 @@ class MazeRenderer():
 
         self._render_special_cells(
             render_grid, show_path, show_solid_pattern)
-        
+
         return self._scale_and_join(render_grid)
 
     def render_frame(

@@ -3,7 +3,8 @@ from terminal_app.terminal_menu import TerminalMenu
 from rendering.render_theme import AnsiColor
 
 if TYPE_CHECKING:
-    from terminal_app.main_menu.maze_terminal_app import MazeTerminalApp
+    from terminal_app.maze_terminal_app import MazeTerminalApp
+
 
 ThemeTarget = Literal["wall", "void", "entry", "exit", "pattern", "path"]
 

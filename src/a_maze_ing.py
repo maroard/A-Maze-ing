@@ -1,7 +1,6 @@
 import sys
 from config import load_maze_from_config
-from terminal_app.main_menu.maze_terminal_app import MazeTerminalApp
-# from renderer import get_render
+from terminal_app.maze_terminal_app import MazeTerminalApp
 
 
 def main() -> None:
@@ -11,12 +10,11 @@ def main() -> None:
                              "Run the project as follows:\n"
                              "    python3 a_maze_ing.py config.txt")
 
-        maze = load_maze_from_config(sys.argv[1])
+        terminal_app = MazeTerminalApp(
+            load_maze_from_config(sys.argv[1])
+        )
 
-        terminal_app = MazeTerminalApp(maze)
         terminal_app.run()
-
-        # print(get_render(maze))
 
     except Exception as error:
         print(f"Error: {error}")

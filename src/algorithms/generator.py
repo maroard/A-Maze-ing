@@ -5,6 +5,7 @@ import random
 from time import sleep
 
 
+
 class MazeGenerator():
     def __init__(self, maze: Maze):
         self.maze = maze

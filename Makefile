@@ -6,8 +6,7 @@ CONFIG      := config.txt
 .PHONY: install run debug clean fclean re lint lint-strict
 
 install:
-	$(PYTHON) -m pip install --upgrade pip
-	$(PYTHON) -m pip install flake8 mypy
+	poetry install
 
 run:
 	cd $(SRC_DIR) && $(PYTHON) a_maze_ing.py ../$(CONFIG)
@@ -28,9 +27,9 @@ fclean: clean
 re: fclean run
 
 lint:
-	flake8 .
-	mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+	flake8 . --exclude=venv,.venv
+	mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs --exclude=venv --exclude=.venv
 
 lint-strict:
-	flake8 .
-	mypy . --strict
+	flake8 . --exclude=venv,.venv
+	mypy . --strict --exclude=venv --exclude=.venv

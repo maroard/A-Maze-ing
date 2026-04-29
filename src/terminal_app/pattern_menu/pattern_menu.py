@@ -3,7 +3,7 @@ from terminal_app.terminal_menu import TerminalMenu
 from terminal_app.pattern_menu.pattern_position_menu import PatternPositionMenu
 
 if TYPE_CHECKING:
-    from terminal_app.main_menu.maze_terminal_app import MazeTerminalApp
+    from terminal_app.maze_terminal_app import MazeTerminalApp
 
 
 class PatternMenu(TerminalMenu):

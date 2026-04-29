@@ -4,7 +4,7 @@ from terminal_app.colors_menu.theme_menu import ThemeMenu
 from terminal_app.colors_menu.object_color_menu import ObjectColorMenu
 
 if TYPE_CHECKING:
-    from terminal_app.main_menu.maze_terminal_app import MazeTerminalApp
+    from terminal_app.maze_terminal_app import MazeTerminalApp
 
 
 class ColorsMenu(TerminalMenu):

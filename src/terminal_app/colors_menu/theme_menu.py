@@ -4,7 +4,7 @@ from rendering.render_theme import RenderTheme
 from collections.abc import Callable
 
 if TYPE_CHECKING:
-    from terminal_app.main_menu.maze_terminal_app import MazeTerminalApp
+    from terminal_app.maze_terminal_app import MazeTerminalApp
 
 
 class ThemeMenu(TerminalMenu):

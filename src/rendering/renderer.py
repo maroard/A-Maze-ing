@@ -69,6 +69,7 @@ class MazeRenderer():
         render_grid: list[list[str]],
         solid_style: bool
     ) -> None:
+
         if solid_style:
             for x, y in self._get_solid_pattern_render_coords():
                 render_grid[y][x] = self.theme.pattern
@@ -120,6 +121,7 @@ class MazeRenderer():
         show_path: bool = False,
         show_solid_pattern: bool = False
     ) -> None:
+
         self._draw_pattern(render_grid, show_solid_pattern)
 
         if show_path:
@@ -150,6 +152,7 @@ class MazeRenderer():
         viewport_width: int,
         viewport_height: int,
     ) -> list[list[str]]:
+
         render_grid_height = len(render_grid)
         render_grid_width = len(render_grid[0])
 
@@ -180,6 +183,7 @@ class MazeRenderer():
         show_path: bool = False,
         show_solid_pattern: bool = False,
     ) -> str:
+
         render_grid = self._create_maze_render_grid()
 
         self._render_special_cells(
@@ -219,6 +223,7 @@ class MazeRenderer():
         show_path: bool = False,
         show_solid_pattern: bool = False,
     ) -> None:
+
         frame = (
             "\033[H"
             + self.get_render(show_path, show_solid_pattern)

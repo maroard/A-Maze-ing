@@ -1,4 +1,4 @@
-from typing import TypedDict, cast
+from typing import TypedDict, cast, NotRequired
 from maze.maze import Maze
 
 
@@ -9,6 +9,7 @@ class Config(TypedDict):
     EXIT: tuple[int, int]
     OUTPUT_FILE: str
     PERFECT: bool
+    SEED: NotRequired[int]
 
 
 ConfigValue = int | tuple[int, int] | str | bool
@@ -78,6 +79,9 @@ def parse_config_value(key: str, value: str) -> ConfigValue:
 
     if key == "PERFECT":
         return parse_bool(value)
+    
+    if key == "SEED":
+        return parse_positive_int(key, value)
 
     raise ValueError(f"Unknown config parameter was given: '{key}'")
 
@@ -151,6 +155,7 @@ def create_maze(config: Config) -> Maze:
         config["EXIT"],
         config["OUTPUT_FILE"],
         config["PERFECT"],
+        config["SEED"]
     )
 
 

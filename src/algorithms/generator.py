@@ -15,6 +15,8 @@ class MazeGenerator():
         self,
         render_on_frame: Callable[[], None] | None = None
     ) -> None:
+        if self.maze.seed is not None:
+            random.seed(self.maze.seed)
         self.maze.init_maze()
 
         try:
@@ -29,6 +31,15 @@ class MazeGenerator():
 
         self.pattern.place(self.maze)
         self._generate_dfs(render_on_frame)
+
+        if not self.maze.perfect:
+            self.add_extra_passages()
+
+        if self.maze.has_3x3_open_area():
+            fix = self.maze.fix_3x3_areas()
+            print(f"fixed {fix} 3x3 open areas")
+        else:
+            print("No 3x3 open areas detected")
 
     def _generate_dfs(
         self,
@@ -61,11 +72,36 @@ class MazeGenerator():
                     sleep(0.02)
 
     def add_extra_passages(self):
-        x = random.randint(0, self.maze.width - 1)
-        y = random.randint(0, self.maze.height - 1)
 
-        cell = self.maze.get_cell(x, y)
-        if cell.is_closed(Side.NORTH):
-            if self.maze.is_inside(x, y - 1):
-                self.maze.open_passage(x, y, Side.NORTH)
-                print("drop the wall")
+        total_cells = self.maze.width * self.maze.height
+        num_passages = int(total_cells * 0.15)  # 15%
+    
+        open = 0
+    
+        while open < num_passages:
+            x = random.randint(0, self.maze.width - 1)
+            y = random.randint(0, self.maze.height - 1)
+            cell = self.maze.get_cell(x, y)
+
+            if cell.is_pattern:
+                continue
+
+            closed_wall = []
+
+            for side in [Side.NORTH, Side.EAST, Side.SOUTH, Side.WEST]:
+                if cell.is_closed(side):
+                    dx, dy = side.delta()
+                    adj_x, adj_y = x + dx, y + dy
+                    
+
+                    if self.maze.is_inside(adj_x, adj_y):
+                        adj_cell =self.maze.get_cell(adj_x, adj_y)
+
+                        if not adj_cell.is_pattern:
+                            closed_wall.append(side)
+        
+            if closed_wall:
+                wall_to_open = random.choice(closed_wall)
+                self.maze.open_passage(x, y, wall_to_open)
+                open += 1 
+                print(f"{open}") #a enlever juste pour voir le nombre de mur retirer

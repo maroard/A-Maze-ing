@@ -5,13 +5,15 @@ from maze.side import Side
 class Maze():
     def __init__(self, width: int, height: int,
                  entry: tuple[int, int], exit: tuple[int, int],
-                 output_file: str, perfect: bool) -> None:
+                 output_file: str, perfect: bool,
+                 seed: int | None = None) -> None:
         self.width = width
         self.height = height
         self.entry = entry
         self.exit = exit
         self.output_file = output_file
         self.perfect = perfect
+        self.seed = seed
 
         self._check_config()
         self.init_maze()
@@ -121,3 +123,54 @@ class Maze():
                 reachable_adjacent_cells.append((side, ax, ay))
 
         return reachable_adjacent_cells
+    
+    def has_3x3_open_area(self) -> bool:
+
+        for y in range(self.height -2):
+            for x in range(self.width - 2):
+
+                if self.found_3x3_open(x, y):
+                    return True
+                
+        return False
+    
+
+    def found_3x3_open(self, start_x: int, start_y: int) -> bool:
+        for dy in range(3):
+            for dx in range(3):
+            
+                x = start_x + dx
+                y = start_y + dy
+
+                cell = self.get_cell(x, y)
+
+                if dx < 2:
+                    if cell.is_closed(Side.EAST):
+                        return False
+                    
+                if dy < 2:
+                    if cell.is_closed(Side.SOUTH):
+                        return False
+                    
+        return True
+    
+    def fix_3x3_areas(self) -> int:
+        fix_count = 0
+
+        for y in range(self.height - 2):
+            for x in range(self.width - 2):
+
+                if self.found_3x3_open(x, y):
+                    mid_x = x + 1
+                    mid_y = y + 1
+
+                    cell = self.get_cell(mid_x, mid_y)
+                    cell.close_wall(Side.EAST)
+
+                    adj_cell = self.get_cell(mid_x + 1, mid_y)
+                    adj_cell.close_wall(Side.WEST)
+
+                    fix_count += 1
+
+        return fix_count
+

@@ -12,23 +12,59 @@ class PatternPositionMenu(TerminalMenu):
 
         self.commands = {
             "1": (lambda: self._move_pattern(PatternPosition.TOP_LEFT),
-                  "Top left"),
+                  f"Top left {
+                      self.app.generator.pattern.get_start_coords(
+                          self.app.maze, PatternPosition.TOP_LEFT)
+                          }"
+                  ),
             "2": (lambda: self._move_pattern(PatternPosition.TOP),
-                  "Top"),
+                  f"Top {
+                      self.app.generator.pattern.get_start_coords(
+                          self.app.maze, PatternPosition.TOP)
+                          }"
+                  ),
             "3": (lambda: self._move_pattern(PatternPosition.TOP_RIGHT),
-                  "Top right"),
+                  f"Top right {
+                      self.app.generator.pattern.get_start_coords(
+                          self.app.maze, PatternPosition.TOP_RIGHT)
+                          }"
+                  ),
             "4": (lambda: self._move_pattern(PatternPosition.MIDDLE_LEFT),
-                  "Middle left"),
+                  f"Middle left {
+                      self.app.generator.pattern.get_start_coords(
+                          self.app.maze, PatternPosition.MIDDLE_LEFT)
+                          }"
+                  ),
             "5": (lambda: self._move_pattern(PatternPosition.CENTER),
-                  "Center"),
+                  f"Center {
+                      self.app.generator.pattern.get_start_coords(
+                          self.app.maze, PatternPosition.CENTER)
+                          }"
+                  ),
             "6": (lambda: self._move_pattern(PatternPosition.MIDDLE_RIGHT),
-                  "Middle right"),
+                  f"Middle right {
+                      self.app.generator.pattern.get_start_coords(
+                          self.app.maze, PatternPosition.MIDDLE_RIGHT)
+                          }"
+                  ),
             "7": (lambda: self._move_pattern(PatternPosition.BOTTOM_LEFT),
-                  "Bottom left"),
+                  f"Bottom left {
+                      self.app.generator.pattern.get_start_coords(
+                          self.app.maze, PatternPosition.BOTTOM_LEFT)
+                          }"
+                  ),
             "8": (lambda: self._move_pattern(PatternPosition.BOTTOM),
-                  "Bottom"),
+                  f"Bottom {
+                      self.app.generator.pattern.get_start_coords(
+                          self.app.maze, PatternPosition.BOTTOM)
+                          }"
+                  ),
             "9": (lambda: self._move_pattern(PatternPosition.BOTTOM_RIGHT),
-                  "Bottom right"),
+                  f"Bottom right {
+                      self.app.generator.pattern.get_start_coords(
+                          self.app.maze, PatternPosition.BOTTOM_RIGHT)
+                          }"
+                  ),
             "0": (self.stop, "Back")
         }
 
@@ -57,9 +93,9 @@ class PatternPositionMenu(TerminalMenu):
 
         if not self.app.generator.pattern.can_place(self.app.maze, position):
             self.app.warning = (
-                "Invalid configuration:"
+                "Invalid position:"
                 "\n"
-                "The entry or exit cell is inside the 42 pattern."
+                "You cannot place the pattern over the entry or exit cell."
                 "\n"
                 "Please choose different coordinates."
             )

@@ -1,7 +1,8 @@
 from terminal_app.terminal_menu import TerminalMenu
 from maze.maze import Maze
-from rendering.renderer import MazeRenderer
 from algorithms.generator import MazeGenerator
+from rendering.renderer import MazeRenderer
+from terminal_app.camera import Camera
 from shutil import get_terminal_size
 from sys import stdout
 from output import get_output
@@ -14,6 +15,7 @@ class MazeTerminalApp(TerminalMenu):
         self.maze = maze
         self.generator = MazeGenerator(maze)
         self.renderer = MazeRenderer(maze, self.generator.pattern)
+        self.camera = Camera()
 
         self.animate = False
         self.show_path = False
@@ -32,6 +34,8 @@ class MazeTerminalApp(TerminalMenu):
                   "Config menu"),
             "0": (self.stop, "Quit")
         }
+
+        self.warning: str = None
 
     def _enter_terminal_screen(self) -> None:
         stdout.write("\033[?1049h")
@@ -54,13 +58,12 @@ class MazeTerminalApp(TerminalMenu):
         stdout.write("\033[?1049l")
         stdout.flush()
 
-    def _get_viewport_size(
+    def _update_viewport_size(
         self,
         menu_title: str,
         content: dict,
         two_columns: bool = False,
-    ) -> tuple[int, int, str]:
-
+    ) -> str:
         terminal_size = get_terminal_size()
         terminal_width = terminal_size.columns
         terminal_height = terminal_size.lines
@@ -72,40 +75,49 @@ class MazeTerminalApp(TerminalMenu):
             content,
             menu_width,
             two_columns,
+            self.warning
         )
 
         menu_height = len(menu_display.splitlines())
 
-        viewport_width = terminal_width
-        viewport_height = max(terminal_height - menu_height - 1, 1)
+        self.camera.viewport_width = terminal_width
+        self.camera.viewport_height = max(terminal_height - menu_height - 1, 1)
 
-        return viewport_width, viewport_height, menu_display
+        return menu_display
+
+    def _center_camera(self) -> None:
+        render_grid_width = 2 * self.maze.width + 1
+        render_grid_height = 2 * self.maze.height + 1
+
+        self.camera.set_to_center(
+            render_grid_width,
+            render_grid_height,
+            self.renderer.x_scale,
+            self.renderer.y_scale,
+        )
 
     def render_to_terminal(
         self,
         menu_title: str,
         content: dict,
-        two_columns: bool = False,
+        two_columns: bool = False
     ) -> None:
+        menu_display = self._update_viewport_size(
+            menu_title,
+            content,
+            two_columns,
+        )
 
-        viewport_width, viewport_height, menu_display = (
-            self._get_viewport_size(
-                menu_title,
-                content,
-                two_columns,
-            ))
+        self.warning = None
 
         maze_display = self.renderer.get_viewport_render(
-            self.camera_x,
-            self.camera_y,
-            viewport_width,
-            viewport_height,
+            self.camera,
             self.show_path,
             self.show_solid_pattern,
         )
 
         screen = (
-            "\033[H"
+            "\033[H\033[J"
             + maze_display
             + "\n"
             + menu_display
@@ -120,20 +132,15 @@ class MazeTerminalApp(TerminalMenu):
         self._enter_terminal_screen()
 
         try:
+            self._update_viewport_size("Main Menu", self.commands)
+            self._center_camera()
+
             def on_frame() -> None:
-                self.renderer.render_frame(
-                    False,
-                    self.show_solid_pattern
-                )
+                self.render_to_terminal("Main Menu", self.commands)
 
             self.generator.generate(on_frame)
 
-            viewport_width, viewport_height, _ = (
-                self._get_viewport_size(
-                    "Main Menu",
-                    self.commands,
-                ))
-            self.center_camera(viewport_width, viewport_height)
+            self._center_camera()
 
             with open(self.maze.output_file, "w") as file:
                 file.write(get_output(self.maze))
@@ -155,11 +162,8 @@ class MazeTerminalApp(TerminalMenu):
     def _regenerate_maze(self) -> None:
         self.generator.generate()
 
-        viewport_width, viewport_height, _ = self._get_viewport_size(
-            "Main Menu",
-            self.commands,
-        )
-        self.center_camera(viewport_width, viewport_height)
+        self._update_viewport_size("Main Menu", self.commands)
+        self._center_camera()
 
         with open(self.maze.output_file, "w") as file:
             file.write(get_output(self.maze))

@@ -3,6 +3,7 @@ from maze.pattern import Pattern
 from rendering.render_theme import RenderTheme
 from maze.side import Side
 from algorithms.pathfinder import get_path_coords, get_shortest_path
+from terminal_app.camera import Camera
 import sys
 
 
@@ -147,43 +148,37 @@ class MazeRenderer():
     def _crop_render_grid(
         self,
         render_grid: list[list[str]],
-        camera_x: int,
-        camera_y: int,
-        viewport_width: int,
-        viewport_height: int,
+        camera: Camera,
+        viewport_render_width: int,
+        viewport_render_height: int,
     ) -> list[list[str]]:
-
         render_grid_height = len(render_grid)
-        render_grid_width = len(render_grid[0])
+        render_grid_width = len(render_grid[0]) if render_grid else 0
 
-        max_camera_x = max(render_grid_width - viewport_width, 0)
-        max_camera_y = max(render_grid_height - viewport_height, 0)
+        max_camera_x = max(render_grid_width - viewport_render_width, 0)
+        max_camera_y = max(render_grid_height - viewport_render_height, 0)
 
-        camera_x = max(0, min(camera_x, max_camera_x))
-        camera_y = max(0, min(camera_y, max_camera_y))
+        camera.x = max(0, min(camera.x, max_camera_x))
+        camera.y = max(0, min(camera.y, max_camera_y))
 
         cropped_grid: list[list[str]] = []
 
-        for y in range(camera_y, camera_y + viewport_height):
+        for y in range(camera.y, camera.y + viewport_render_height):
             if y >= render_grid_height:
                 break
 
             line = render_grid[y]
-            cropped_line = line[camera_x:camera_x + viewport_width]
+            cropped_line = line[camera.x:camera.x + viewport_render_width]
             cropped_grid.append(cropped_line)
 
         return cropped_grid
 
     def get_viewport_render(
         self,
-        camera_x: int,
-        camera_y: int,
-        viewport_width: int,
-        viewport_height: int,
+        camera: Camera,
         show_path: bool = False,
         show_solid_pattern: bool = False,
     ) -> str:
-
         render_grid = self._create_maze_render_grid()
 
         self._render_special_cells(
@@ -192,13 +187,12 @@ class MazeRenderer():
             show_solid_pattern,
         )
 
-        viewport_render_width = max(viewport_width // self.x_scale, 1)
-        viewport_render_height = max(viewport_height // self.y_scale, 1)
+        viewport_render_width = max(camera.viewport_width // self.x_scale, 1)
+        viewport_render_height = max(camera.viewport_height // self.y_scale, 1)
 
         cropped_grid = self._crop_render_grid(
             render_grid,
-            camera_x,
-            camera_y,
+            camera,
             viewport_render_width,
             viewport_render_height,
         )

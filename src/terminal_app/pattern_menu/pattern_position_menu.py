@@ -20,7 +20,7 @@ class PatternPositionMenu(TerminalMenu):
             "4": (lambda: self._move_pattern(PatternPosition.MIDDLE_LEFT),
                   "Middle left"),
             "5": (lambda: self._move_pattern(PatternPosition.CENTER),
-                  "Center (default)"),
+                  "Center"),
             "6": (lambda: self._move_pattern(PatternPosition.MIDDLE_RIGHT),
                   "Middle right"),
             "7": (lambda: self._move_pattern(PatternPosition.BOTTOM_LEFT),
@@ -56,11 +56,13 @@ class PatternPositionMenu(TerminalMenu):
             return
 
         if not self.app.generator.pattern.can_place(self.app.maze, position):
-            print("Invalid configuration:"
-                  "\n"
-                  "the entry or exit cell is inside the 42 pattern."
-                  "\n"
-                  "Please choose different coordinates.")
+            self.app.warning = (
+                "Invalid configuration:"
+                "\n"
+                "The entry or exit cell is inside the 42 pattern."
+                "\n"
+                "Please choose different coordinates."
+            )
             return
 
         self.app.generator.pattern.position = position

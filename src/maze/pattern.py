@@ -43,19 +43,19 @@ class Pattern:
             position = self.position
 
         if position is PatternPosition.TOP_LEFT:
-            start_x = 0
-            start_y = 0
+            start_x = 1
+            start_y = 1
 
         elif position is PatternPosition.TOP:
             start_x = (maze.width - self.width) // 2
-            start_y = 0
+            start_y = 1
 
         elif position is PatternPosition.TOP_RIGHT:
-            start_x = maze.width - self.width
-            start_y = 0
+            start_x = maze.width - self.width - 1
+            start_y = 1
 
         elif position is PatternPosition.MIDDLE_LEFT:
-            start_x = 0
+            start_x = 1
             start_y = (maze.height - self.height) // 2
 
         elif position is PatternPosition.CENTER:
@@ -63,20 +63,20 @@ class Pattern:
             start_y = (maze.height - self.height) // 2
 
         elif position is PatternPosition.MIDDLE_RIGHT:
-            start_x = maze.width - self.width
+            start_x = maze.width - self.width - 1
             start_y = (maze.height - self.height) // 2
 
         elif position is PatternPosition.BOTTOM_LEFT:
-            start_x = 0
-            start_y = maze.height - self.height
+            start_x = 1
+            start_y = maze.height - self.height - 1
 
         elif position is PatternPosition.BOTTOM:
             start_x = (maze.width - self.width) // 2
-            start_y = maze.height - self.height
+            start_y = maze.height - self.height - 1
 
         else:
-            start_x = maze.width - self.width
-            start_y = maze.height - self.height
+            start_x = maze.width - self.width - 1
+            start_y = maze.height - self.height - 1
 
         return start_x, start_y
 

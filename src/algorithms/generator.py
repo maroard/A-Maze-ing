@@ -3,7 +3,7 @@ from maze.pattern import Pattern
 from typing import Callable
 import random
 from time import sleep
-
+from maze.side import Side
 
 
 class MazeGenerator():
@@ -61,4 +61,11 @@ class MazeGenerator():
                     sleep(0.02)
 
     def add_extra_passages(self):
-        pass
+        x = random.randint(0, self.maze.width - 1)
+        y = random.randint(0, self.maze.height - 1)
+
+        cell = self.maze.get_cell(x, y)
+        if cell.is_closed(Side.NORTH):
+            if self.maze.is_inside(x, y - 1):
+                self.maze.open_passage(x, y, Side.NORTH)
+                print("drop the wall")

@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING
+from terminal_app.screen_context import ScreenContext
 from terminal_app.terminal_menu import TerminalMenu
 from rendering.render_theme import RenderTheme
 from collections.abc import Callable
@@ -44,15 +45,22 @@ class ThemeMenu(TerminalMenu):
 
         while self.running:
             self.app.render_to_terminal(
-                "Pattern Menu", self.commands, True)
+                ScreenContext(
+                    menu_title="Theme Menu",
+                    commands=self.commands,
+                    two_columns=True,
+                    message=self.app.message,
+                    alert=self.app.alert,
+                )
+            )
 
             command = input()
 
+            if self.app.handle_global_command(command):
+                continue
+
             command_data = self.commands.get(command)
             if command_data is None:
-                self.app.render_to_terminal(
-                    "Theme Menu", self.commands, True)
-
                 continue
 
             action = command_data[0]

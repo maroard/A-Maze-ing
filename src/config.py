@@ -79,7 +79,7 @@ def parse_config_value(key: str, value: str) -> ConfigValue:
 
     if key == "PERFECT":
         return parse_bool(value)
-    
+
     if key == "SEED":
         return parse_positive_int(key, value)
 
@@ -155,7 +155,7 @@ def create_maze(config: Config) -> Maze:
         config["EXIT"],
         config["OUTPUT_FILE"],
         config["PERFECT"],
-        config["SEED"]
+        config.get("SEED", None)
     )
 
 

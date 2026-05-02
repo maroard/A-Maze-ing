@@ -1,4 +1,5 @@
 from typing import Literal, TYPE_CHECKING
+from terminal_app.screen_context import ScreenContext
 from terminal_app.terminal_menu import TerminalMenu
 from rendering.render_theme import AnsiColor
 
@@ -61,17 +62,22 @@ class ObjectColorMenu(TerminalMenu):
 
         while self.running:
             self.app.render_to_terminal(
-                f"Choose {self.object_target} color",
-                self.commands, True)
+                ScreenContext(
+                    menu_title=f"Choose a {self.object_target} color",
+                    commands=self.commands,
+                    two_columns=True,
+                    message=self.app.message,
+                    alert=self.app.alert,
+                )
+            )
 
             command = input()
 
+            if self.app.handle_global_command(command):
+                continue
+
             command_data = self.commands.get(command)
             if command_data is None:
-                self.app.render_to_terminal(
-                    f"Choose {self.object_target} color",
-                    self.commands, True)
-
                 continue
 
             action = command_data[0]

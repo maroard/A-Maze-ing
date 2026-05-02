@@ -19,16 +19,6 @@ class MazeGenerator():
             random.seed(self.maze.seed)
         self.maze.init_maze()
 
-        try:
-            if not self.pattern.can_place(self.maze):
-                raise ValueError(
-                    "The entry or exit cell is inside the 42 pattern."
-                    "\n"
-                    "Please choose different coordinates."
-                )
-        except ValueError as error:
-            print(f"Invalid configuration:\n{error}")
-
         self.pattern.place(self.maze)
         self._generate_dfs(render_on_frame)
 
@@ -36,10 +26,7 @@ class MazeGenerator():
             self.add_extra_passages()
 
         if self.maze.has_3x3_open_area():
-            fix = self.maze.fix_3x3_areas()
-            print(f"fixed {fix} 3x3 open areas")
-        else:
-            print("No 3x3 open areas detected")
+            self.maze.fix_3x3_areas()
 
     def _generate_dfs(
         self,
@@ -72,12 +59,11 @@ class MazeGenerator():
                     sleep(0.02)
 
     def add_extra_passages(self):
-
         total_cells = self.maze.width * self.maze.height
-        num_passages = int(total_cells * 0.15)  # 15%
-    
+        num_passages = int(total_cells * 0.15)
+
         open = 0
-    
+
         while open < num_passages:
             x = random.randint(0, self.maze.width - 1)
             y = random.randint(0, self.maze.height - 1)
@@ -86,22 +72,20 @@ class MazeGenerator():
             if cell.is_pattern:
                 continue
 
-            closed_wall = []
+            closed_walls = []
 
-            for side in [Side.NORTH, Side.EAST, Side.SOUTH, Side.WEST]:
+            for side in Side:
                 if cell.is_closed(side):
                     dx, dy = side.delta()
                     adj_x, adj_y = x + dx, y + dy
-                    
 
                     if self.maze.is_inside(adj_x, adj_y):
-                        adj_cell =self.maze.get_cell(adj_x, adj_y)
+                        adj_cell = self.maze.get_cell(adj_x, adj_y)
 
                         if not adj_cell.is_pattern:
-                            closed_wall.append(side)
-        
-            if closed_wall:
-                wall_to_open = random.choice(closed_wall)
+                            closed_walls.append(side)
+
+            if closed_walls:
+                wall_to_open = random.choice(closed_walls)
                 self.maze.open_passage(x, y, wall_to_open)
-                open += 1 
-                print(f"{open}") #a enlever juste pour voir le nombre de mur retirer
+                open += 1

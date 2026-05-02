@@ -123,22 +123,21 @@ class Maze():
                 reachable_adjacent_cells.append((side, ax, ay))
 
         return reachable_adjacent_cells
-    
+
     def has_3x3_open_area(self) -> bool:
 
-        for y in range(self.height -2):
+        for y in range(self.height - 2):
             for x in range(self.width - 2):
 
                 if self.found_3x3_open(x, y):
                     return True
-                
+
         return False
-    
 
     def found_3x3_open(self, start_x: int, start_y: int) -> bool:
         for dy in range(3):
             for dx in range(3):
-            
+
                 x = start_x + dx
                 y = start_y + dy
 
@@ -147,13 +146,13 @@ class Maze():
                 if dx < 2:
                     if cell.is_closed(Side.EAST):
                         return False
-                    
+
                 if dy < 2:
                     if cell.is_closed(Side.SOUTH):
                         return False
-                    
+
         return True
-    
+
     def fix_3x3_areas(self) -> int:
         fix_count = 0
 
@@ -173,4 +172,3 @@ class Maze():
                     fix_count += 1
 
         return fix_count
-

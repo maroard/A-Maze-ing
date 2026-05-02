@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING
+from terminal_app.screen_context import ScreenContext
 from terminal_app.terminal_menu import TerminalMenu
 from terminal_app.pattern_menu.pattern_position_menu import PatternPositionMenu
 
@@ -22,14 +23,22 @@ class PatternMenu(TerminalMenu):
         self.running = True
 
         while self.running:
-            self.app.render_to_terminal("Pattern Menu", self.commands)
+            self.app.render_to_terminal(
+                ScreenContext(
+                    menu_title="Pattern Menu",
+                    commands=self.commands,
+                    message=self.app.message,
+                    alert=self.app.alert,
+                )
+            )
 
             command = input()
 
+            if self.app.handle_global_command(command):
+                continue
+
             command_data = self.commands.get(command)
             if command_data is None:
-                self.app.render_to_terminal("Pattern Menu", self.commands)
-
                 continue
 
             action = command_data[0]

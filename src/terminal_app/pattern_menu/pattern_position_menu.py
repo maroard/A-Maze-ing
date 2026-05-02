@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
+from terminal_app.screen_context import ScreenContext
 from terminal_app.terminal_menu import TerminalMenu
-from maze.pattern import PatternPosition
+from maze.pattern import PatternPosition, PatternError
 
 if TYPE_CHECKING:
     from terminal_app.maze_terminal_app import MazeTerminalApp
@@ -73,15 +74,22 @@ class PatternPositionMenu(TerminalMenu):
 
         while self.running:
             self.app.render_to_terminal(
-                "Pattern Menu", self.commands, True)
+                ScreenContext(
+                    menu_title="Choose the pattern's position",
+                    commands=self.commands,
+                    two_columns=True,
+                    message=self.app.message,
+                    alert=self.app.alert,
+                )
+            )
 
             command = input()
 
+            if self.app.handle_global_command(command):
+                continue
+
             command_data = self.commands.get(command)
             if command_data is None:
-                self.app.render_to_terminal(
-                    "Choose pattern position", self.commands, True)
-
                 continue
 
             action = command_data[0]
@@ -91,12 +99,14 @@ class PatternPositionMenu(TerminalMenu):
         if position == self.app.generator.pattern.position:
             return
 
-        if not self.app.generator.pattern.can_place(self.app.maze, position):
-            self.app.warning = (
-                "Invalid position:"
+        try:
+            self.app.generator.pattern.validate_placement(
+                self.app.maze, position)
+        except PatternError:
+            self.app.message = (
+                "Invalid position:\n"
                 "\n"
-                "You cannot place the pattern over the entry or exit cell."
-                "\n"
+                "You cannot place the pattern over the entry or exit cell.\n"
                 "Please choose different coordinates."
             )
             return

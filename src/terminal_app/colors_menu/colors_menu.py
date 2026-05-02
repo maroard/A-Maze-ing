@@ -1,7 +1,11 @@
 from typing import TYPE_CHECKING
+from terminal_app.screen_context import ScreenContext
 from terminal_app.terminal_menu import TerminalMenu
 from terminal_app.colors_menu.theme_menu import ThemeMenu
-from terminal_app.colors_menu.object_color_menu import ObjectColorMenu
+from terminal_app.colors_menu.object_color_menu import (
+    ObjectColorMenu,
+    ThemeTarget,
+)
 
 if TYPE_CHECKING:
     from terminal_app.maze_terminal_app import MazeTerminalApp
@@ -34,15 +38,22 @@ class ColorsMenu(TerminalMenu):
 
         while self.running:
             self.app.render_to_terminal(
-                "Colors Menu", self.commands, True)
+                ScreenContext(
+                    menu_title="Colors Menu",
+                    commands=self.commands,
+                    two_columns=True,
+                    message=self.app.message,
+                    alert=self.app.alert,
+                )
+            )
 
             command = input()
 
+            if self.app.handle_global_command(command):
+                continue
+
             command_data = self.commands.get(command)
             if command_data is None:
-                self.app.render_to_terminal(
-                    "Theme Menu", self.commands, True)
-
                 continue
 
             action = command_data[0]
@@ -52,6 +63,6 @@ class ColorsMenu(TerminalMenu):
         menu = ThemeMenu(self.app)
         menu.run()
 
-    def _color_menu(self, target: str) -> None:
+    def _color_menu(self, target: ThemeTarget) -> None:
         menu = ObjectColorMenu(self.app, target)
         menu.run()

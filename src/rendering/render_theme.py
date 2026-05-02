@@ -144,10 +144,10 @@ class RenderTheme:
         theme.wall = AnsiColor.GRAY.value + "█" + AnsiColor.RESET.value
         theme.void = AnsiColor.BG_BLACK.value + " " + AnsiColor.RESET.value
         theme.entry = AnsiColor.BG_WHITE.value + " " + AnsiColor.RESET.value
-        theme.exit = AnsiColor.BG_DARK_GRAY.value + " " + AnsiColor.RESET.value
-        theme.pattern = AnsiColor.BG_GRAY.value + " " + AnsiColor.RESET.value
-        theme.path = (
-            AnsiColor.BG_LIGHT_BLUE.value + " " + AnsiColor.RESET.value)
+        theme.exit = AnsiColor.BG_RED.value + " " + AnsiColor.RESET.value
+        theme.pattern = (
+            AnsiColor.BG_DARK_GRAY.value + " " + AnsiColor.RESET.value)
+        theme.path = AnsiColor.BG_GRAY.value + " " + AnsiColor.RESET.value
         return theme
 
     @staticmethod

@@ -2,7 +2,7 @@
 name = "A-Maze-ing"
 version = "0.1.0"
 description = "Amazing maze generator and solver!"
-authors = ["Mathias"]
+authors = ["maroard", "almanier"]
 
 [tool.poetry.dependencies]
 python = "^3.10"

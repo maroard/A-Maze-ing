@@ -2,6 +2,26 @@ from enum import Enum
 from maze.maze import Maze
 
 
+class PatternError(Exception):
+    pass
+
+
+class PatternTooLargeError(PatternError):
+    pass
+
+
+class PatternOverlapError(PatternError):
+    pass
+
+
+class PatternEntryOverlapError(PatternOverlapError):
+    pass
+
+
+class PatternExitOverlapError(PatternOverlapError):
+    pass
+
+
 PATTERN_42: tuple[str, ...] = (
     "1000111",
     "1000001",
@@ -24,8 +44,10 @@ class PatternPosition(Enum):
 
 
 class Pattern:
-    def __init__(self,
-                 position: PatternPosition = PatternPosition.CENTER) -> None:
+    def __init__(
+            self,
+            position: PatternPosition = PatternPosition.CENTER
+    ) -> None:
         self.shape = PATTERN_42
         self.position = position
         self.width = len(self.shape[0])
@@ -37,6 +59,7 @@ class Pattern:
         maze: Maze,
         target_position: PatternPosition | None = None
     ) -> tuple[int, int]:
+
         if target_position is not None:
             position = target_position
         else:
@@ -85,6 +108,7 @@ class Pattern:
         maze: Maze,
         target_position: PatternPosition | None = None
     ) -> list[tuple[int, int]]:
+
         pattern_coords: list[tuple[int, int]] = []
 
         start_x, start_y = self.get_start_coords(maze, target_position)
@@ -96,23 +120,34 @@ class Pattern:
 
         return pattern_coords
 
-    def can_place(
+    def validate_placement(
         self,
         maze: Maze,
         target_position: PatternPosition | None = None
-    ) -> bool:
+    ) -> None:
+
         if maze.width < self.width or maze.height < self.height:
-            print("Warning: maze too small to place 42 pattern.")
-            return False
+            raise PatternTooLargeError(
+                "The maze is too small to display the 42 pattern.")
 
         pattern_coords = set(self.get_coords(maze, target_position))
 
-        if maze.entry in pattern_coords or maze.exit in pattern_coords:
-            return False
-
-        return True
+        if maze.entry in pattern_coords and maze.exit in pattern_coords:
+            raise PatternOverlapError(
+                "The entry and exit cells overlap the 42 pattern. "
+            )
+        if maze.entry in pattern_coords:
+            raise PatternEntryOverlapError(
+                "The entry cell overlaps the 42 pattern. "
+            )
+        if maze.exit in pattern_coords:
+            raise PatternExitOverlapError(
+                "The exit cell overlaps the 42 pattern. "
+            )
 
     def place(self, maze: Maze) -> None:
+        self.validate_placement(maze)
+
         self.coords = self.get_coords(maze)
 
         for x, y in self.coords:

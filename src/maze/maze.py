@@ -2,6 +2,34 @@ from maze.cell import Cell
 from maze.side import Side
 
 
+class MazeConfigError(Exception):
+    pass
+
+
+class MazeSizeError(MazeConfigError):
+    pass
+
+
+class MazeWidthSizeError(MazeSizeError):
+    pass
+
+
+class MazeHeightSizeError(MazeSizeError):
+    pass
+
+
+class MazeEntryExitOverlapError(MazeConfigError):
+    pass
+
+
+class MazeEntryOutOfBoundsError(MazeConfigError):
+    pass
+
+
+class MazeExitOutOfBoundsError(MazeConfigError):
+    pass
+
+
 class Maze():
     def __init__(self, width: int, height: int,
                  entry: tuple[int, int], exit: tuple[int, int],
@@ -15,7 +43,6 @@ class Maze():
         self.perfect = perfect
         self.seed = seed
 
-        self._check_config()
         self.init_maze()
 
     def __str__(self) -> str:
@@ -29,27 +56,40 @@ class Maze():
 
         return lines
 
-    def _check_config(self) -> None:
-        if self.width <= 0 or self.height <= 0:
-            raise ValueError("WIDTH and HEIGHT must be positive!")
+    def check_config(self) -> None:
+        if self.width <= 0 and self.height <= 0:
+            raise MazeSizeError(
+                "WIDTH and HEIGHT must be positive integers.")
+
+        if self.width <= 0:
+            raise MazeWidthSizeError(
+                "WIDTH must be a positive integer."
+            )
+
+        if self.height <= 0:
+            raise MazeHeightSizeError(
+                "HEIGHT must be a positive integer."
+            )
 
         if self.entry == self.exit:
-            raise ValueError("The ENTRY and EXIT points "
-                             "cannot be in the same place!")
+            raise MazeEntryExitOverlapError(
+                "ENTRY and EXIT cannot be on the same cell.")
 
         if (
             self.entry[0] < 0 or self.entry[1] < 0
             or self.entry[0] >= self.width
             or self.entry[1] >= self.height
         ):
-            raise ValueError("Entry coordinates must be within the Maze!")
+            raise MazeEntryOutOfBoundsError(
+                "ENTRY coordinates are outside the maze bounds.")
 
         if (
             self.exit[0] < 0 or self.exit[1] < 0
             or self.exit[0] >= self.width
             or self.exit[1] >= self.height
         ):
-            raise ValueError("Exit coordinates must be within the Maze!")
+            raise MazeExitOutOfBoundsError(
+                "EXIT coordinates are outside the maze bounds.")
 
     def init_maze(self):
         self.grid = []

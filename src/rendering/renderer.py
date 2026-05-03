@@ -4,7 +4,7 @@ from rendering.render_theme import RenderTheme
 from maze.side import Side
 from algorithms.pathfinder import get_path_coords, get_shortest_path
 from terminal_app.camera import Camera
-import sys
+# import sys
 
 
 class MazeRenderer():
@@ -198,32 +198,3 @@ class MazeRenderer():
         )
 
         return self._scale_and_join(cropped_grid)
-
-    def get_render(
-        self,
-        show_path: bool,
-        show_solid_pattern: bool
-    ) -> str:
-
-        render_grid = self._create_maze_render_grid()
-
-        self._render_special_cells(
-            render_grid, show_path, show_solid_pattern)
-
-        return self._scale_and_join(render_grid)
-
-    def render_frame(
-        self,
-        show_path: bool = False,
-        show_solid_pattern: bool = False,
-    ) -> None:
-
-        frame = (
-            "\033[H"
-            + self.get_render(show_path, show_solid_pattern)
-            + "\n"
-            + "\033[J"
-        )
-
-        sys.stdout.write(frame)
-        sys.stdout.flush()

@@ -12,6 +12,7 @@ class Camera:
         x_scale: int,
         y_scale: int,
     ) -> None:
+
         viewport_render_width = max(self.viewport_width // x_scale, 1)
         viewport_render_height = max(self.viewport_height // y_scale, 1)
 

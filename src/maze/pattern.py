@@ -59,7 +59,6 @@ class Pattern:
         maze: Maze,
         target_position: PatternPosition | None = None
     ) -> tuple[int, int]:
-
         if target_position is not None:
             position = target_position
         else:
@@ -108,7 +107,6 @@ class Pattern:
         maze: Maze,
         target_position: PatternPosition | None = None
     ) -> list[tuple[int, int]]:
-
         pattern_coords: list[tuple[int, int]] = []
 
         start_x, start_y = self.get_start_coords(maze, target_position)
@@ -125,8 +123,7 @@ class Pattern:
         maze: Maze,
         target_position: PatternPosition | None = None
     ) -> None:
-
-        if maze.width < self.width or maze.height < self.height:
+        if maze.width < self.width + 2 or maze.height < self.height + 2:
             raise PatternTooLargeError(
                 "The maze is too small to display the 42 pattern.")
 

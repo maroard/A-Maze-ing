@@ -20,7 +20,7 @@ class MenuDisplay:
         self.prompt = prompt
 
     def _get_menu_width(self, width: int) -> int:
-        return max(width, 42)
+        return max(width, 60)
 
     def _get_menu_items(self) -> list:
         return [
@@ -175,12 +175,10 @@ class MenuDisplay:
 
     def get_menu_display(self) -> str:
         if self.alert:
-            title = "ALERT"
             body_display = self._get_alert_display()
             footer_display = self._get_footer_display()
             prompt_display = self._get_alert_prompt_display()
         else:
-            title = self.title
             body_display = self._get_body_display()
             footer_display = self._get_footer_display()
             prompt_display = self._get_prompt_display()
@@ -192,7 +190,7 @@ class MenuDisplay:
             f"│{'A-Maze-ing':^{self.width}}│\n"
             f"│{'':{self.width}}│\n"
             f"├{'─' * self.width}┤\n"
-            f"│{title:^{self.width}}│\n"
+            f"│{self.title:^{self.width}}│\n"
             f"├{'─' * self.width}┤\n"
             f"{body_display}"
             f"{footer_display}"

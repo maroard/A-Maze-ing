@@ -1,8 +1,8 @@
 class MenuDisplay:
     def __init__(
         self,
-        title: str,
         width: int,
+        title: str,
         commands: dict,
         text: str | None = None,
         two_columns: bool = False,
@@ -10,17 +10,14 @@ class MenuDisplay:
         alert: str | None = None,
         prompt: str | None = None,
     ) -> None:
+        self.width = width
         self.title = title
-        self.width = self._get_menu_width(width)
         self.commands = commands
         self.text = text
         self.two_columns = two_columns
         self.message = message
         self.alert = alert
         self.prompt = prompt
-
-    def _get_menu_width(self, width: int) -> int:
-        return max(width, 60)
 
     def _get_menu_items(self) -> list:
         return [

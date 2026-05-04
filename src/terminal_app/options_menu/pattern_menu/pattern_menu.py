@@ -1,7 +1,8 @@
 from typing import TYPE_CHECKING
-from terminal_app.screen_context import ScreenContext
 from terminal_app.terminal_menu import TerminalMenu
-from terminal_app.pattern_menu.pattern_position_menu import PatternPositionMenu
+from terminal_app.screen_context import ScreenContext
+from terminal_app.options_menu.pattern_menu.pattern_position_menu import (
+    PatternPositionMenu)
 
 if TYPE_CHECKING:
     from terminal_app.maze_terminal_app import MazeTerminalApp

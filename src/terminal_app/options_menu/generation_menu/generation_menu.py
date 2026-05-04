@@ -11,9 +11,10 @@ class GenerationMenu(TerminalMenu):
         self.app = app
 
         self.commands = {
-            "1": (self.switch_gen_algo,
+            "1": (self._switch_generation_algo,
                   "Switch generation algorithm"),
-            # "2": (None, "Toggle"),
+            "2": (self._toggle_generation_animation,
+                  "Toggle generation animation"),
             "0": (self.stop, "Back")
         }
 
@@ -27,7 +28,9 @@ class GenerationMenu(TerminalMenu):
                     commands=self.commands,
                     text=(
                         "Current generation algorithm: "
-                        f"{self.app.generator.algorithms[0][1]}"
+                        f"{self.app.generator.algorithms[0][1]}\n"
+                        "Animate generation: "
+                        f"{self.app.animate_generation}"
                     ),
                     two_columns=False,
                     message=self.app.message,
@@ -47,5 +50,8 @@ class GenerationMenu(TerminalMenu):
             action = command_data[0]
             action()
 
-    def switch_gen_algo(self):
+    def _switch_generation_algo(self):
         self.app.generator.algorithms.reverse()
+
+    def _toggle_generation_animation(self):
+        self.app.animate_generation = not self.app.animate_generation

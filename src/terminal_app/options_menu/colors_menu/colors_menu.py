@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING
-from terminal_app.screen_context import ScreenContext
 from terminal_app.terminal_menu import TerminalMenu
-from terminal_app.colors_menu.theme_menu import ThemeMenu
-from terminal_app.colors_menu.object_color_menu import (
+from terminal_app.screen_context import ScreenContext
+from terminal_app.options_menu.colors_menu.theme_menu import ThemeMenu
+from terminal_app.options_menu.colors_menu.object_color_menu import (
     ObjectColorMenu,
     ThemeTarget,
 )

@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
-from terminal_app.screen_context import ScreenContext
 from terminal_app.terminal_menu import TerminalMenu
 from maze.pattern import PatternPosition, PatternError
+from terminal_app.screen_context import ScreenContext
 
 if TYPE_CHECKING:
     from terminal_app.maze_terminal_app import MazeTerminalApp
@@ -14,7 +14,8 @@ class PatternPositionMenu(TerminalMenu):
         self.commands = {
             "1": (
                 lambda: self._move_pattern(PatternPosition.TOP_LEFT),
-                self._position_label("Top left", PatternPosition.TOP_LEFT),
+                self._position_label(
+                    "Top left", PatternPosition.TOP_LEFT),
             ),
             "2": (
                 lambda: self._move_pattern(PatternPosition.TOP),

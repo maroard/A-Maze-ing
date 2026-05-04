@@ -1,12 +1,13 @@
 from collections.abc import Callable
 from shutil import get_terminal_size
 from sys import stdout
+from time import sleep
 
 from maze.maze import Maze, MazeConfigError
 from algorithms.generator import MazeGenerator
 from terminal_app.config_error_handler import ConfigErrorHandler
 from maze.pattern import PatternError
-from output import get_output
+from output import get_output, format_coords
 from rendering.renderer import MazeRenderer
 from terminal_app.menu_display import MenuDisplay
 from terminal_app.camera import Camera
@@ -14,6 +15,7 @@ from terminal_app.screen_context import ScreenContext
 from terminal_app.terminal_menu import TerminalMenu
 from terminal_app.colors_menu.colors_menu import ColorsMenu
 from terminal_app.pattern_menu.pattern_menu import PatternMenu
+from terminal_app.generation_menu.generation_menu import GenerationMenu
 
 
 Command = tuple[Callable[[], None], str]
@@ -28,7 +30,6 @@ class MazeTerminalApp(TerminalMenu):
         self.renderer = MazeRenderer(maze, self.generator.pattern)
         self.camera = Camera()
 
-        self.animate = False
         self.show_path = False
         self.show_solid_pattern = False
 
@@ -45,7 +46,9 @@ class MazeTerminalApp(TerminalMenu):
             "3": (self._colors_menu, "Colors Menu"),
             "4": (self._pattern_menu, "Pattern Menu"),
             "5": (self._config_menu, "Config Menu"),
-            "6": (self._credits, "Credits"),
+            "6": (self._generation_menu, "Generation Menu"),
+            "7": (self._show_config, "Show config"),
+            "8": (self._credits, "Credits"),
             "0": (self.stop, "Quit"),
         }
 
@@ -90,10 +93,11 @@ class MazeTerminalApp(TerminalMenu):
         action = command_data[0]
         action()
 
+
         return True
 
     def _regenerate_maze(self) -> None:
-        self.generator.generate()
+        self._generate_until_valid_config()
 
         self._refresh_viewport_size()
         self._center_camera()
@@ -109,11 +113,29 @@ class MazeTerminalApp(TerminalMenu):
         menu.run()
 
     def _pattern_menu(self) -> None:
+        if not self.generator.pattern.is_placed:
+            self.message = "Cannot access this menu; no pattern detected."
+            return
         menu = PatternMenu(self)
+        menu.run()
+
+    def _generation_menu(self) -> None:
+        menu = GenerationMenu(self)
         menu.run()
 
     def _config_menu(self) -> None:
         self.message = "Config menu is not implemented yet."
+
+    def _show_config(self) -> None:
+        self.message = (
+            f"WIDTH: {self.maze.width}\n"
+            f"HEIGHT: {self.maze.height}\n"
+            f"ENTRY: {format_coords(self.maze.entry)}\n"
+            f"EXIT: {format_coords(self.maze.exit)}\n"
+            f"OUTPUT_FILE: {self.maze.output_file}\n"
+            f"PERFECT: {self.maze.perfect}\n"
+            f"SEED: {self.maze.seed}"
+        )
 
     def _credits(self) -> None:
         self.message = (
@@ -156,6 +178,16 @@ class MazeTerminalApp(TerminalMenu):
         return None
 
     def render_to_terminal(self, screen_context: ScreenContext) -> None:
+        if get_terminal_size().columns < 60:
+            stdout.write(
+                "\033[H\033[J"
+                + "Please adjust window size for the interface to be displayed"
+                + "\033[J"
+            )
+            stdout.flush()
+            while get_terminal_size().columns < 60:
+                sleep(0.01)
+
         menu_display = ""
 
         if screen_context.show_menu:

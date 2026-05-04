@@ -1,4 +1,5 @@
-from typing import TypedDict, cast, NotRequired
+from typing_extensions import NotRequired
+from typing import TypedDict, cast
 from maze.maze import Maze
 
 

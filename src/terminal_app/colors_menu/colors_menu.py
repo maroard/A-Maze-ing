@@ -64,5 +64,8 @@ class ColorsMenu(TerminalMenu):
         menu.run()
 
     def _color_menu(self, target: ThemeTarget) -> None:
+        if target == "pattern" and not self.app.generator.pattern.is_placed:
+            self.app.message = "Cannot change this color; no pattern detected."
+            return
         menu = ObjectColorMenu(self.app, target)
         menu.run()

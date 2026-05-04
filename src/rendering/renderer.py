@@ -4,7 +4,6 @@ from rendering.render_theme import RenderTheme
 from maze.side import Side
 from algorithms.pathfinder import get_path_coords, get_shortest_path
 from terminal_app.camera import Camera
-# import sys
 
 
 class MazeRenderer():
@@ -46,7 +45,7 @@ class MazeRenderer():
         return render_grid
 
     def _get_solid_pattern_render_coords(self) -> list[tuple[int, int]]:
-        pattern_coords = self.pattern.get_coords(self.maze)
+        pattern_coords = self.pattern.coords
         render_solid_pattern_coords: set[tuple[int, int]] = set()
 
         for x, y in pattern_coords:
@@ -70,12 +69,11 @@ class MazeRenderer():
         render_grid: list[list[str]],
         solid_style: bool
     ) -> None:
-
         if solid_style:
             for x, y in self._get_solid_pattern_render_coords():
                 render_grid[y][x] = self.theme.pattern
         else:
-            for x, y in self.pattern.get_coords(self.maze):
+            for x, y in self.pattern.coords:
                 render_grid[2 * y + 1][2 * x + 1] = self.theme.pattern
 
     def _get_path_render_coords(self) -> list[tuple[int, int]]:
@@ -122,8 +120,8 @@ class MazeRenderer():
         show_path: bool = False,
         show_solid_pattern: bool = False
     ) -> None:
-
-        self._draw_pattern(render_grid, show_solid_pattern)
+        if self.pattern.is_placed:
+            self._draw_pattern(render_grid, show_solid_pattern)
 
         if show_path:
             self._draw_path(render_grid)

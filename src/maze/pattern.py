@@ -53,6 +53,7 @@ class Pattern:
         self.width = len(self.shape[0])
         self.height = len(self.shape)
         self.coords: list[tuple[int, int]] = []
+        self.is_placed: bool = False
 
     def get_start_coords(
         self,
@@ -149,3 +150,5 @@ class Pattern:
 
         for x, y in self.coords:
             maze.get_cell(x, y).is_pattern = True
+
+        self.is_placed = True

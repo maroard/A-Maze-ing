@@ -252,6 +252,17 @@ class ConfigErrorHandler:
 
             return size
 
+    def _parse_size(self, raw_size: str) -> int | None:
+        try:
+            size = int(raw_size.strip())
+        except ValueError:
+            return None
+
+        if size <= 0:
+            return None
+
+        return size
+
     def _prompt_for_dimensions(
         self,
         prompt: str,
@@ -281,17 +292,6 @@ class ConfigErrorHandler:
                 continue
 
             return dimensions
-
-    def _parse_size(self, raw_size: str) -> int | None:
-        try:
-            size = int(raw_size.strip())
-        except ValueError:
-            return None
-
-        if size <= 0:
-            return None
-
-        return size
 
     def _parse_dimensions(
         self,

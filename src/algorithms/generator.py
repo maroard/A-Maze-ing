@@ -1,5 +1,5 @@
 from maze.maze import Maze
-from maze.pattern import Pattern
+from maze.pattern import Pattern, PatternTooLargeError
 from typing import Callable
 import random
 from time import sleep
@@ -10,6 +10,10 @@ class MazeGenerator():
     def __init__(self, maze: Maze):
         self.maze = maze
         self.pattern = Pattern()
+        self.algorithms = [
+            (self._generate_dfs, "DFS Backtracker"),
+            (self._generate_prim, "Randomized Prim")
+        ]
 
     def generate(
         self,
@@ -19,14 +23,24 @@ class MazeGenerator():
             random.seed(self.maze.seed)
         self.maze.init_maze()
 
-        self.pattern.place(self.maze)
-        self._generate_dfs(render_on_frame)
+        try:
+            pattern_error = None
+            self.pattern.place(self.maze)
+        except PatternTooLargeError as error:
+            pattern_error = error
+            pass
 
-        if not self.maze.perfect:
-            self.add_extra_passages()
+        self.algorithms[0][0](render_on_frame)
 
-        if self.maze.has_3x3_open_area():
-            self.maze.fix_3x3_areas()
+        if self.maze.perfect:
+            if not self.maze.perfect:
+                self.add_extra_passages()
+
+            if self.maze.has_3x3_open_area():
+                self.maze.fix_3x3_areas()
+
+        if pattern_error:
+            raise pattern_error
 
     def _generate_dfs(
         self,
@@ -57,6 +71,63 @@ class MazeGenerator():
                 if render_on_frame:
                     render_on_frame()
                     sleep(0.02)
+
+    def _generate_prim(
+        self,
+        render_on_frame: Callable[[], None] | None = None
+    ) -> None:
+        x, y = self.maze.entry
+        self.maze.get_cell(x, y).visited = True
+        frontier = []
+
+        for side in [Side.NORTH, Side.EAST, Side.SOUTH, Side.WEST]:
+            dx, dy = side.delta()
+            ax, ay = x + dx, y + dy
+
+            if self.maze.is_inside(ax, ay):
+                frontier.append((ax, ay))
+
+        while frontier:
+            x, y = random.choice(frontier)
+            frontier.remove((x, y))
+            cell = self.maze.get_cell(x, y)
+
+            if cell.visited:
+                continue
+
+            available_paths = []
+
+            for side in [Side.NORTH, Side.EAST, Side.SOUTH, Side.WEST]:
+                dx, dy = side.delta()
+                ax, ay = x + dx, y + dy
+
+                if self.maze.is_inside(ax, ay):
+                    adjacent_cell = self.maze.get_cell(ax, ay)
+                    if adjacent_cell.visited:
+                        available_paths.append((side, ax, ay))
+
+            if not available_paths:
+                continue
+
+            side, ax, ay = random.choice(available_paths)
+            self.maze.open_passage(x, y, side)
+            cell.visited = True
+
+            for side in [Side.NORTH, Side.EAST, Side.SOUTH, Side.WEST]:
+                dx, dy = side.delta()
+                ax, ay = x + dx, y + dy
+
+                if self.maze.is_inside(ax, ay):
+                    adjacent_cell = self.maze.get_cell(ax, ay)
+                    if (
+                        not adjacent_cell.visited
+                        and not adjacent_cell.is_pattern
+                    ):
+                        frontier.append((ax, ay))
+
+            if render_on_frame:
+                render_on_frame()
+                sleep(0.02)
 
     def add_extra_passages(self):
         total_cells = self.maze.width * self.maze.height

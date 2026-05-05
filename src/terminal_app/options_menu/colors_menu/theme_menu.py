@@ -14,11 +14,11 @@ class ThemeMenu(TerminalMenu):
 
         self.commands = {
             "1": (lambda: self._set_theme(RenderTheme.dark_classic),
-                  "Dark classic"),
+                  "Dark Classic"),
             "2": (lambda: self._set_theme(RenderTheme.neon_cyber),
-                  "Neon cyber"),
+                  "Neon Cyber"),
             "3": (lambda: self._set_theme(RenderTheme.purple_night),
-                  "Purple night"),
+                  "Purple Night"),
             "4": (lambda: self._set_theme(RenderTheme.matrix),
                   "Matrix"),
             "5": (lambda: self._set_theme(RenderTheme.lava),
@@ -26,13 +26,13 @@ class ThemeMenu(TerminalMenu):
             "6": (lambda: self._set_theme(RenderTheme.ice),
                   "Ice"),
             "7": (lambda: self._set_theme(RenderTheme.clean_light),
-                  "Clean light"),
+                  "Clean Light"),
             "8": (lambda: self._set_theme(RenderTheme.grayscale),
                   "Grayscale"),
             "9": (lambda: self._set_theme(RenderTheme.ocean),
                   "Ocean"),
             "10": (lambda: self._set_theme(RenderTheme.gold_mine),
-                   "Gold mine"),
+                   "Gold Mine"),
             "11": (lambda: self._set_theme(RenderTheme.candy),
                    "Candy"),
             "12": (lambda: self._set_theme(RenderTheme.midnight_sakura),
@@ -47,6 +47,7 @@ class ThemeMenu(TerminalMenu):
             self.app.render_to_terminal(
                 ScreenContext(
                     menu_title="Theme Menu",
+                    text=f"Current theme: {self.app.renderer.theme.name}",
                     commands=self.commands,
                     two_columns=True,
                     message=self.app.message,
@@ -54,7 +55,7 @@ class ThemeMenu(TerminalMenu):
                 )
             )
 
-            command = input()
+            command = input().strip()
 
             if self.app.handle_global_command(command):
                 continue

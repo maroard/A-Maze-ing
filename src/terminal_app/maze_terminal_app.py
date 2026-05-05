@@ -7,13 +7,14 @@ from maze.maze import Maze, MazeConfigError
 from algorithms.generator import MazeGenerator
 from terminal_app.config_error_handler import ConfigErrorHandler
 from maze.pattern import PatternError
-from output import get_output, format_coords
+from output import get_output
 from rendering.renderer import MazeRenderer
 from terminal_app.menu_display import MenuDisplay
 from terminal_app.camera import Camera
 from terminal_app.screen_context import ScreenContext
 from terminal_app.terminal_menu import TerminalMenu
 from terminal_app.options_menu.options_menu import OptionsMenu
+from terminal_app.config_display import get_config_display
 
 
 Command = tuple[Callable[[], None], str]
@@ -44,7 +45,7 @@ class MazeTerminalApp(TerminalMenu):
         }
 
         self.commands: CommandDict = {
-            "1": (self._regenerate_maze, "Generate a new Maze"),
+            "1": (self.regenerate_maze, "Generate a new Maze"),
             "2": (self._toggle_path, "Show/Hide path from entry to exit"),
             "3": (self._options_menu, "Options"),
             "4": (self._show_config, "Show config"),
@@ -60,7 +61,7 @@ class MazeTerminalApp(TerminalMenu):
         self._enter_terminal_screen()
 
         try:
-            self._generate_until_valid_config(animate_generation=True)
+            self.generate_until_valid_config(animate_generation=True)
 
             self._refresh_viewport_size()
             self._center_camera()
@@ -100,76 +101,6 @@ class MazeTerminalApp(TerminalMenu):
             action()
 
         return True
-
-    def _regenerate_maze(self) -> None:
-        self._generate_until_valid_config(self.animate_generation)
-
-        self._refresh_viewport_size()
-        self._center_camera()
-
-        with open(self.maze.output_file, "w") as file:
-            file.write(get_output(self.maze))
-
-    def _toggle_path(self) -> None:
-        self.show_path = not self.show_path
-
-    def _options_menu(self) -> None:
-        menu = OptionsMenu(self)
-        menu.run()
-
-    def _config_menu(self) -> None:
-        self.message = "Config menu is not implemented yet."
-
-    def _show_config(self) -> None:
-        self.message = (
-            f"WIDTH: {self.maze.width}\n"
-            f"HEIGHT: {self.maze.height}\n"
-            f"ENTRY: {format_coords(self.maze.entry)}\n"
-            f"EXIT: {format_coords(self.maze.exit)}\n"
-            f"OUTPUT_FILE: {self.maze.output_file}\n"
-            f"PERFECT: {self.maze.perfect}\n"
-            f"SEED: {self.maze.seed}"
-        )
-
-    def _credits(self) -> None:
-        self.message = (
-            "This project has been created as part "
-            "of the 42 curriculum by maroard and almanier"
-        )
-
-    def _generate_until_valid_config(
-        self,
-        animate_generation: bool,
-    ) -> None:
-        render_on_frame = self._get_generation_callback(animate_generation)
-
-        while True:
-            try:
-                self.maze.check_config()
-                self.generator.generate(render_on_frame)
-                self.alert = None
-                return
-
-            except (MazeConfigError, PatternError) as error:
-                should_retry = self.config_error_handler.handle(error)
-
-                if not should_retry:
-                    return
-
-    def _should_animate_generation(self) -> bool:
-        return self.maze.width <= 20 and self.maze.height <= 20
-
-    def _get_generation_callback(
-        self,
-        animate_generation: bool,
-    ) -> Callable[[], None] | None:
-        if animate_generation and self._should_animate_generation():
-            def on_frame() -> None:
-                self.render_to_terminal(self._get_animation_screen_context())
-
-            return on_frame
-
-        return None
 
     def render_to_terminal(self, screen_context: ScreenContext) -> None:
         menu_display = ""
@@ -237,6 +168,72 @@ class MazeTerminalApp(TerminalMenu):
 
         stdout.write(screen)
         stdout.flush()
+
+    def regenerate_maze(self) -> None:
+        if self.animate_generation and self.show_path:
+            self.message = (
+                "You cannot generate a new Maze "
+                "with animated generation while showing path."
+            )
+            return
+
+        self.generate_until_valid_config(self.animate_generation)
+
+        self._refresh_viewport_size()
+        self._center_camera()
+
+        with open(self.maze.output_file, "w") as file:
+            file.write(get_output(self.maze))
+
+    def _toggle_path(self) -> None:
+        self.show_path = not self.show_path
+
+    def _options_menu(self) -> None:
+        menu = OptionsMenu(self)
+        menu.run()
+
+    def _show_config(self) -> None:
+        self.message = get_config_display(self.maze)
+
+    def _credits(self) -> None:
+        self.message = (
+            "This project has been created as part "
+            "of the 42 curriculum by maroard and almanier"
+        )
+
+    def generate_until_valid_config(
+        self,
+        animate_generation: bool,
+    ) -> None:
+        render_on_frame = self._get_generation_callback(animate_generation)
+
+        while True:
+            try:
+                self.maze.check_config()
+                self.generator.generate(render_on_frame)
+                self.alert = None
+                return
+
+            except (MazeConfigError, PatternError) as error:
+                should_retry = self.config_error_handler.handle(error)
+
+                if not should_retry:
+                    return
+
+    def _should_animate_generation(self) -> bool:
+        return self.maze.width <= 20 and self.maze.height <= 20
+
+    def _get_generation_callback(
+        self,
+        animate_generation: bool,
+    ) -> Callable[[], None] | None:
+        if animate_generation and self._should_animate_generation():
+            def on_frame() -> None:
+                self.render_to_terminal(self._get_animation_screen_context())
+
+            return on_frame
+
+        return None
 
     def _get_main_screen_context(self) -> ScreenContext:
         return ScreenContext(

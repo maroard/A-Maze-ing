@@ -32,15 +32,15 @@ PATTERN_42: tuple[str, ...] = (
 
 
 class PatternPosition(Enum):
-    TOP_LEFT = "top_left"
+    TOP_LEFT = "top left"
     TOP = "top"
-    TOP_RIGHT = "top_right"
-    MIDDLE_LEFT = "middle_left"
+    TOP_RIGHT = "top right"
+    MIDDLE_LEFT = "middle left"
     CENTER = "center"
-    MIDDLE_RIGHT = "middle_right"
-    BOTTOM_LEFT = "bottom_left"
+    MIDDLE_RIGHT = "middle right"
+    BOTTOM_LEFT = "bottom left"
     BOTTOM = "bottom"
-    BOTTOM_RIGHT = "bottom_right"
+    BOTTOM_RIGHT = "bottom right"
 
 
 class Pattern:

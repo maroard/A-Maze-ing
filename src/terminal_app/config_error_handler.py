@@ -79,7 +79,7 @@ class ConfigErrorHandler:
         )
 
         self.app.maze.width = self._prompt_for_size(
-            "Please choose a new WIDTH as a positive integer: ", error,
+            "Please choose a new width as a positive integer: ", error,
         )
 
     def _handle_maze_height_size(self, error: MazeHeightSizeError) -> None:
@@ -92,7 +92,7 @@ class ConfigErrorHandler:
         )
 
         self.app.maze.height = self._prompt_for_size(
-            "Please choose a new HEIGHT as a positive integer: ", error,
+            "Please choose a new height as a positive integer: ", error,
         )
 
     def _handle_maze_size(self, error: MazeSizeError) -> None:

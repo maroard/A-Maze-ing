@@ -60,20 +60,17 @@ class PatternPositionMenu(TerminalMenu):
             "0": (self.stop, "Back"),
         }
 
-    def _position_label(self, label: str, position: PatternPosition) -> str:
-        coords = self.app.generator.pattern.get_start_coords(
-            self.app.maze,
-            position,
-        )
-        return f"{label} {coords}"
-
     def run(self) -> None:
         self.running = True
 
         while self.running:
+            pattern_position = (
+                self.app.generator.pattern.position.value.capitalize())
+
             self.app.render_to_terminal(
                 ScreenContext(
                     menu_title="Choose the pattern's position",
+                    text=(f"Current pattern position: {pattern_position}"),
                     commands=self.commands,
                     two_columns=True,
                     message=self.app.message,
@@ -81,7 +78,7 @@ class PatternPositionMenu(TerminalMenu):
                 )
             )
 
-            command = input()
+            command = input().strip()
 
             if self.app.handle_global_command(command):
                 continue
@@ -111,3 +108,10 @@ class PatternPositionMenu(TerminalMenu):
 
         self.app.generator.pattern.position = position
         self.app.generator.generate()
+
+    def _position_label(self, label: str, position: PatternPosition) -> str:
+        coords = self.app.generator.pattern.get_start_coords(
+            self.app.maze,
+            position,
+        )
+        return f"{label} {coords}"

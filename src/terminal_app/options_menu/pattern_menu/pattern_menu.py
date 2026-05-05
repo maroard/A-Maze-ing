@@ -14,7 +14,7 @@ class PatternMenu(TerminalMenu):
 
         self.commands = {
             "1": (self._toggle_solid_pattern,
-                  "Switch 42 pattern style: solid/dotted "),
+                  "Switch pattern style"),
             "2": (self._pattern_position_menu,
                   "Change pattern position"),
             "0": (self.stop, "Back")
@@ -24,16 +24,25 @@ class PatternMenu(TerminalMenu):
         self.running = True
 
         while self.running:
+            pattern_style = (
+                "Solid" if self.app.show_solid_pattern else "Dotted")
+            pattern_position = (
+                self.app.generator.pattern.position.value.capitalize())
+
             self.app.render_to_terminal(
                 ScreenContext(
                     menu_title="Pattern Menu",
+                    text=(
+                        f"Current pattern style: {pattern_style}\n"
+                        f"Current pattern position: {pattern_position}"
+                    ),
                     commands=self.commands,
                     message=self.app.message,
                     alert=self.app.alert,
                 )
             )
 
-            command = input()
+            command = input().strip()
 
             if self.app.handle_global_command(command):
                 continue

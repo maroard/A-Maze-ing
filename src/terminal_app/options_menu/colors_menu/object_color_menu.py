@@ -11,9 +11,11 @@ ThemeTarget = Literal["wall", "void", "entry", "exit", "pattern", "path"]
 
 
 class ObjectColorMenu(TerminalMenu):
-    def __init__(self,
-                 app: "MazeTerminalApp",
-                 object_target: ThemeTarget) -> None:
+    def __init__(
+        self,
+        app: "MazeTerminalApp",
+        object_target: ThemeTarget
+    ) -> None:
         self.app = app
         self.object_target = object_target
 
@@ -61,9 +63,14 @@ class ObjectColorMenu(TerminalMenu):
         self.running = True
 
         while self.running:
+
             self.app.render_to_terminal(
                 ScreenContext(
                     menu_title=f"Choose a {self.object_target} color",
+                    text=(
+                        f"Current {self.object_target} color: "
+                        f"{self._get_target_color_name()}"
+                    ),
                     commands=self.commands,
                     two_columns=True,
                     message=self.app.message,
@@ -71,7 +78,7 @@ class ObjectColorMenu(TerminalMenu):
                 )
             )
 
-            command = input()
+            command = input().strip()
 
             if self.app.handle_global_command(command):
                 continue
@@ -82,6 +89,21 @@ class ObjectColorMenu(TerminalMenu):
 
             action = command_data[0]
             action()
+
+    def _get_target_color_name(self) -> str:
+        color = getattr(self.app.renderer.theme, self.object_target)
+
+        if self.object_target == "wall":
+            ansi_code = color.split("█")[0]
+        else:
+            ansi_code = color.split(" ")[0]
+
+        return (
+            AnsiColor(ansi_code).name
+            .removeprefix("BG_")
+            .replace("_", " ")
+            .title()
+        )
 
     def _get_render_value(self, color: AnsiColor) -> str:
         if self.object_target == "wall":

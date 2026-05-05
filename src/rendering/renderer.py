@@ -15,6 +15,32 @@ class MazeRenderer():
         self.x_scale = 2
         self.y_scale = 1
 
+    def get_viewport_render(
+        self,
+        camera: Camera,
+        show_path: bool = False,
+        show_solid_pattern: bool = False,
+    ) -> str:
+        render_grid = self._create_maze_render_grid()
+
+        self._render_special_cells(
+            render_grid,
+            show_path,
+            show_solid_pattern,
+        )
+
+        viewport_render_width = max(camera.viewport_width // self.x_scale, 1)
+        viewport_render_height = max(camera.viewport_height // self.y_scale, 1)
+
+        cropped_grid = self._crop_render_grid(
+            render_grid,
+            camera,
+            viewport_render_width,
+            viewport_render_height,
+        )
+
+        return self._scale_and_join(cropped_grid)
+
     def _create_maze_render_grid(self) -> list[list[str]]:
         render_width = 2 * self.maze.width + 1
         render_height = 2 * self.maze.height + 1
@@ -44,6 +70,33 @@ class MazeRenderer():
 
         return render_grid
 
+    def _render_special_cells(
+        self,
+        render_grid: list[list[str]],
+        show_path: bool = False,
+        show_solid_pattern: bool = False
+    ) -> None:
+        if self.pattern.is_placed:
+            self._draw_pattern(render_grid, show_solid_pattern)
+
+        if show_path:
+            self._draw_path(render_grid)
+
+        self._draw_entry(render_grid)
+        self._draw_exit(render_grid)
+
+    def _draw_pattern(
+        self,
+        render_grid: list[list[str]],
+        solid_style: bool
+    ) -> None:
+        if solid_style:
+            for x, y in self._get_solid_pattern_render_coords():
+                render_grid[y][x] = self.theme.pattern
+        else:
+            for x, y in self.pattern.coords:
+                render_grid[2 * y + 1][2 * x + 1] = self.theme.pattern
+
     def _get_solid_pattern_render_coords(self) -> list[tuple[int, int]]:
         pattern_coords = self.pattern.coords
         render_solid_pattern_coords: set[tuple[int, int]] = set()
@@ -64,17 +117,9 @@ class MazeRenderer():
 
         return list(render_solid_pattern_coords)
 
-    def _draw_pattern(
-        self,
-        render_grid: list[list[str]],
-        solid_style: bool
-    ) -> None:
-        if solid_style:
-            for x, y in self._get_solid_pattern_render_coords():
-                render_grid[y][x] = self.theme.pattern
-        else:
-            for x, y in self.pattern.coords:
-                render_grid[2 * y + 1][2 * x + 1] = self.theme.pattern
+    def _draw_path(self, render_grid: list[list[str]]) -> None:
+        for x, y in self._get_path_render_coords():
+            render_grid[y][x] = self.theme.path
 
     def _get_path_render_coords(self) -> list[tuple[int, int]]:
         path_coords = get_path_coords(self.maze, get_shortest_path(self.maze))
@@ -102,10 +147,6 @@ class MazeRenderer():
 
         return render_path_coords
 
-    def _draw_path(self, render_grid: list[list[str]]) -> None:
-        for x, y in self._get_path_render_coords():
-            render_grid[y][x] = self.theme.path
-
     def _draw_entry(self, render_grid: list[list[str]]) -> None:
         entry_x, entry_y = self.maze.entry
         render_grid[2 * entry_y + 1][2 * entry_x + 1] = self.theme.entry
@@ -113,35 +154,6 @@ class MazeRenderer():
     def _draw_exit(self, render_grid: list[list[str]]) -> None:
         exit_x, exit_y = self.maze.exit
         render_grid[2 * exit_y + 1][2 * exit_x + 1] = self.theme.exit
-
-    def _render_special_cells(
-        self,
-        render_grid: list[list[str]],
-        show_path: bool = False,
-        show_solid_pattern: bool = False
-    ) -> None:
-        if self.pattern.is_placed:
-            self._draw_pattern(render_grid, show_solid_pattern)
-
-        if show_path:
-            self._draw_path(render_grid)
-
-        self._draw_entry(render_grid)
-        self._draw_exit(render_grid)
-
-    def _scale_and_join(self, render_grid: list[list[str]]) -> str:
-        lines = []
-
-        for line in render_grid:
-            display_line = ""
-
-            for char in line:
-                display_line += char * self.x_scale
-
-            for _ in range(self.y_scale):
-                lines.append(display_line)
-
-        return "\n".join(lines)
 
     def _crop_render_grid(
         self,
@@ -171,28 +183,16 @@ class MazeRenderer():
 
         return cropped_grid
 
-    def get_viewport_render(
-        self,
-        camera: Camera,
-        show_path: bool = False,
-        show_solid_pattern: bool = False,
-    ) -> str:
-        render_grid = self._create_maze_render_grid()
+    def _scale_and_join(self, render_grid: list[list[str]]) -> str:
+        lines = []
 
-        self._render_special_cells(
-            render_grid,
-            show_path,
-            show_solid_pattern,
-        )
+        for line in render_grid:
+            display_line = ""
 
-        viewport_render_width = max(camera.viewport_width // self.x_scale, 1)
-        viewport_render_height = max(camera.viewport_height // self.y_scale, 1)
+            for char in line:
+                display_line += char * self.x_scale
 
-        cropped_grid = self._crop_render_grid(
-            render_grid,
-            camera,
-            viewport_render_width,
-            viewport_render_height,
-        )
+            for _ in range(self.y_scale):
+                lines.append(display_line)
 
-        return self._scale_and_join(cropped_grid)
+        return "\n".join(lines)

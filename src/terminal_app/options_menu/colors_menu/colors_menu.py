@@ -47,7 +47,7 @@ class ColorsMenu(TerminalMenu):
                 )
             )
 
-            command = input()
+            command = input().strip()
 
             if self.app.handle_global_command(command):
                 continue

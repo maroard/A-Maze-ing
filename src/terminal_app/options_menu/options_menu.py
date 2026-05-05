@@ -7,6 +7,9 @@ from terminal_app.options_menu.pattern_menu.pattern_menu import (
     PatternMenu)
 from terminal_app.options_menu.generation_menu.generation_menu import (
     GenerationMenu)
+from terminal_app.options_menu.config_menu.config_menu import (
+    ConfigMenu
+)
 
 if TYPE_CHECKING:
     from terminal_app.maze_terminal_app import MazeTerminalApp
@@ -20,6 +23,7 @@ class OptionsMenu(TerminalMenu):
             "1": (self._generation_menu, "Generation settings"),
             "2": (self._pattern_menu, "Pattern settings"),
             "3": (self._colors_menu, "Customize colors"),
+            "4": (self._config_menu, "Configuration"),
             "0": (self.stop, "Back")
         }
 
@@ -36,7 +40,7 @@ class OptionsMenu(TerminalMenu):
                 )
             )
 
-            command = input()
+            command = input().strip()
 
             if self.app.handle_global_command(command):
                 continue
@@ -61,4 +65,8 @@ class OptionsMenu(TerminalMenu):
 
     def _colors_menu(self) -> None:
         menu = ColorsMenu(self.app)
+        menu.run()
+
+    def _config_menu(self) -> None:
+        menu = ConfigMenu(self.app)
         menu.run()

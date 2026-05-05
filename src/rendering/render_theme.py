@@ -45,7 +45,8 @@ class AnsiColor(Enum):
 
 class RenderTheme:
     def __init__(self) -> None:
-        default = RenderTheme.candy()
+        default = self.candy()
+        self.name = default.name
         self.wall = default.wall
         self.void = default.void
         self.entry = default.entry
@@ -53,9 +54,10 @@ class RenderTheme:
         self.pattern = default.pattern
         self.path = default.path
 
-    @staticmethod
-    def dark_classic() -> "RenderTheme":
-        theme = object.__new__(RenderTheme)
+    @classmethod
+    def dark_classic(cls) -> "RenderTheme":
+        theme = object.__new__(cls)
+        theme.name = "Dark Classic"
         theme.wall = AnsiColor.BLACK.value + "█" + AnsiColor.RESET.value
         theme.void = AnsiColor.BG_WHITE.value + " " + AnsiColor.RESET.value
         theme.entry = AnsiColor.BG_GREEN.value + " " + AnsiColor.RESET.value
@@ -66,9 +68,10 @@ class RenderTheme:
             AnsiColor.BG_LIGHT_BLUE.value + " " + AnsiColor.RESET.value)
         return theme
 
-    @staticmethod
-    def neon_cyber() -> "RenderTheme":
-        theme = object.__new__(RenderTheme)
+    @classmethod
+    def neon_cyber(cls) -> "RenderTheme":
+        theme = object.__new__(cls)
+        theme.name = "Neon Cyber"
         theme.wall = AnsiColor.CYAN.value + "█" + AnsiColor.RESET.value
         theme.void = AnsiColor.BG_BLACK.value + " " + AnsiColor.RESET.value
         theme.entry = AnsiColor.BG_GREEN.value + " " + AnsiColor.RESET.value
@@ -78,9 +81,10 @@ class RenderTheme:
         theme.path = AnsiColor.BG_YELLOW.value + " " + AnsiColor.RESET.value
         return theme
 
-    @staticmethod
-    def purple_night() -> "RenderTheme":
-        theme = object.__new__(RenderTheme)
+    @classmethod
+    def purple_night(cls) -> "RenderTheme":
+        theme = object.__new__(cls)
+        theme.name = "Purple Night"
         theme.wall = AnsiColor.PURPLE.value + "█" + AnsiColor.RESET.value
         theme.void = AnsiColor.BG_BLACK.value + " " + AnsiColor.RESET.value
         theme.entry = AnsiColor.BG_TEAL.value + " " + AnsiColor.RESET.value
@@ -90,9 +94,10 @@ class RenderTheme:
             AnsiColor.BG_LIGHT_BLUE.value + " " + AnsiColor.RESET.value)
         return theme
 
-    @staticmethod
-    def matrix() -> "RenderTheme":
-        theme = object.__new__(RenderTheme)
+    @classmethod
+    def matrix(cls) -> "RenderTheme":
+        theme = object.__new__(cls)
+        theme.name = "Matrix"
         theme.wall = AnsiColor.GREEN.value + "█" + AnsiColor.RESET.value
         theme.void = AnsiColor.BG_BLACK.value + " " + AnsiColor.RESET.value
         theme.entry = (
@@ -103,9 +108,10 @@ class RenderTheme:
         theme.path = AnsiColor.BG_GOLD.value + " " + AnsiColor.RESET.value
         return theme
 
-    @staticmethod
-    def lava() -> "RenderTheme":
-        theme = object.__new__(RenderTheme)
+    @classmethod
+    def lava(cls) -> "RenderTheme":
+        theme = object.__new__(cls)
+        theme.name = "Lava"
         theme.wall = AnsiColor.ORANGE.value + "█" + AnsiColor.RESET.value
         theme.void = AnsiColor.BG_BLACK.value + " " + AnsiColor.RESET.value
         theme.entry = AnsiColor.BG_GOLD.value + " " + AnsiColor.RESET.value
@@ -115,9 +121,10 @@ class RenderTheme:
         theme.path = AnsiColor.BG_MAGENTA.value + " " + AnsiColor.RESET.value
         return theme
 
-    @staticmethod
-    def ice() -> "RenderTheme":
-        theme = object.__new__(RenderTheme)
+    @classmethod
+    def ice(cls) -> "RenderTheme":
+        theme = object.__new__(cls)
+        theme.name = "Ice"
         theme.wall = AnsiColor.LIGHT_BLUE.value + "█" + AnsiColor.RESET.value
         theme.void = AnsiColor.BG_BLACK.value + " " + AnsiColor.RESET.value
         theme.entry = AnsiColor.BG_CYAN.value + " " + AnsiColor.RESET.value
@@ -126,9 +133,10 @@ class RenderTheme:
         theme.path = AnsiColor.BG_BLUE.value + " " + AnsiColor.RESET.value
         return theme
 
-    @staticmethod
-    def clean_light() -> "RenderTheme":
-        theme = object.__new__(RenderTheme)
+    @classmethod
+    def clean_light(cls) -> "RenderTheme":
+        theme = object.__new__(cls)
+        theme.name = "Clean Light"
         theme.wall = AnsiColor.WHITE.value + "█" + AnsiColor.RESET.value
         theme.void = AnsiColor.BG_BLACK.value + " " + AnsiColor.RESET.value
         theme.entry = AnsiColor.BG_GREEN.value + " " + AnsiColor.RESET.value
@@ -138,9 +146,10 @@ class RenderTheme:
         theme.path = AnsiColor.BG_BLUE.value + " " + AnsiColor.RESET.value
         return theme
 
-    @staticmethod
-    def grayscale() -> "RenderTheme":
-        theme = object.__new__(RenderTheme)
+    @classmethod
+    def grayscale(cls) -> "RenderTheme":
+        theme = object.__new__(cls)
+        theme.name = "Grayscale"
         theme.wall = AnsiColor.GRAY.value + "█" + AnsiColor.RESET.value
         theme.void = AnsiColor.BG_BLACK.value + " " + AnsiColor.RESET.value
         theme.entry = AnsiColor.BG_WHITE.value + " " + AnsiColor.RESET.value
@@ -150,9 +159,10 @@ class RenderTheme:
         theme.path = AnsiColor.BG_GRAY.value + " " + AnsiColor.RESET.value
         return theme
 
-    @staticmethod
-    def ocean() -> "RenderTheme":
-        theme = object.__new__(RenderTheme)
+    @classmethod
+    def ocean(cls) -> "RenderTheme":
+        theme = object.__new__(cls)
+        theme.name = "Ocean"
         theme.wall = AnsiColor.TEAL.value + "█" + AnsiColor.RESET.value
         theme.void = AnsiColor.BG_BLACK.value + " " + AnsiColor.RESET.value
         theme.entry = (
@@ -162,9 +172,10 @@ class RenderTheme:
         theme.path = AnsiColor.BG_BLUE.value + " " + AnsiColor.RESET.value
         return theme
 
-    @staticmethod
-    def gold_mine() -> "RenderTheme":
-        theme = object.__new__(RenderTheme)
+    @classmethod
+    def gold_mine(cls) -> "RenderTheme":
+        theme = object.__new__(cls)
+        theme.name = "Gold Mine"
         theme.wall = AnsiColor.GOLD.value + "█" + AnsiColor.RESET.value
         theme.void = AnsiColor.BG_BLACK.value + " " + AnsiColor.RESET.value
         theme.entry = AnsiColor.BG_GREEN.value + " " + AnsiColor.RESET.value
@@ -173,9 +184,10 @@ class RenderTheme:
         theme.path = AnsiColor.BG_YELLOW.value + " " + AnsiColor.RESET.value
         return theme
 
-    @staticmethod
-    def candy() -> "RenderTheme":
-        theme = object.__new__(RenderTheme)
+    @classmethod
+    def candy(cls) -> "RenderTheme":
+        theme = object.__new__(cls)
+        theme.name = "Candy"
         theme.wall = AnsiColor.PINK.value + "█" + AnsiColor.RESET.value
         theme.void = AnsiColor.BG_WHITE.value + " " + AnsiColor.RESET.value
         theme.entry = (
@@ -186,9 +198,10 @@ class RenderTheme:
         theme.path = AnsiColor.BG_CYAN.value + " " + AnsiColor.RESET.value
         return theme
 
-    @staticmethod
-    def midnight_sakura() -> "RenderTheme":
-        theme = object.__new__(RenderTheme)
+    @classmethod
+    def midnight_sakura(cls) -> "RenderTheme":
+        theme = object.__new__(cls)
+        theme.name = "Midnight Sakura"
         theme.wall = AnsiColor.MAGENTA.value + "█" + AnsiColor.RESET.value
         theme.void = AnsiColor.BG_BLACK.value + " " + AnsiColor.RESET.value
         theme.entry = AnsiColor.BG_TEAL.value + " " + AnsiColor.RESET.value

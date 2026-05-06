@@ -11,6 +11,7 @@ ThemeTarget = Literal["wall", "void", "entry", "exit", "pattern", "path"]
 
 
 class ObjectColorMenu(TerminalMenu):
+    # Create commands for assigning ANSI colors to one theme target.
     def __init__(
         self,
         app: "MazeTerminalApp",
@@ -59,6 +60,7 @@ class ObjectColorMenu(TerminalMenu):
             "0": (self.stop, "Back")
         }
 
+    # Display color choices for the current theme target.
     def run(self) -> None:
         self.running = True
 
@@ -90,6 +92,7 @@ class ObjectColorMenu(TerminalMenu):
             action = command_data[0]
             action()
 
+    # Read the current ANSI color name for the target being edited.
     def _get_target_color_name(self) -> str:
         color = getattr(self.app.renderer.theme, self.object_target)
 
@@ -105,6 +108,7 @@ class ObjectColorMenu(TerminalMenu):
             .title()
         )
 
+    # Build the rendered wall or background glyph for an ANSI color.
     def _get_render_value(self, color: AnsiColor) -> str:
         if self.object_target == "wall":
             return color.value + "█" + AnsiColor.RESET.value
@@ -112,6 +116,7 @@ class ObjectColorMenu(TerminalMenu):
         bg_color = AnsiColor[f"BG_{color.name}"]
         return bg_color.value + " " + AnsiColor.RESET.value
 
+    # Assign the selected render value to the active theme target.
     def _set_color(self, color: AnsiColor) -> None:
         setattr(
             self.app.renderer.theme,

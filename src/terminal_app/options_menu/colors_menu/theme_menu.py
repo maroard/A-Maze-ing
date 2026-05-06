@@ -9,6 +9,7 @@ if TYPE_CHECKING:
 
 
 class ThemeMenu(TerminalMenu):
+    # Create commands for choosing predefined render themes.
     def __init__(self, app: "MazeTerminalApp") -> None:
         self.app = app
 
@@ -40,6 +41,7 @@ class ThemeMenu(TerminalMenu):
             "0": (self.stop, "Back")
         }
 
+    # Display theme choices and dispatch the selected theme.
     def run(self) -> None:
         self.running = True
 
@@ -67,5 +69,6 @@ class ThemeMenu(TerminalMenu):
             action = command_data[0]
             action()
 
+    # Replace the active render theme with a predefined theme instance.
     def _set_theme(self, theme_factory: Callable[[], RenderTheme]) -> None:
         self.app.renderer.theme = theme_factory()

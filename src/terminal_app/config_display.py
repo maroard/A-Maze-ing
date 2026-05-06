@@ -2,6 +2,7 @@ from maze.maze import Maze
 from output import format_coords
 
 
+# Build the text block that shows the current maze configuration.
 def get_config_display(maze: Maze) -> str:
     return (
         f"WIDTH: {maze.width}\n"

@@ -3,6 +3,7 @@ from config import load_maze_from_config
 from terminal_app.maze_terminal_app import MazeTerminalApp
 
 
+# Validate CLI input, load the configured maze, and start the terminal app.
 def main() -> None:
     try:
         if len(sys.argv) != 2 or not sys.argv[1].endswith(".txt"):

@@ -5,6 +5,7 @@ from maze.maze import (
     MazeSizeError,
     MazeWidthSizeError,
     MazeHeightSizeError,
+    MazeMinimumSizeError,
     MazeEntryExitOverlapError,
     MazeEntryOutOfBoundsError,
     MazeExitOutOfBoundsError,
@@ -22,9 +23,11 @@ if TYPE_CHECKING:
 
 
 class ConfigErrorHandler:
+    # Keep a reference to the app so errors can update UI and config state.
     def __init__(self, app: "MazeTerminalApp") -> None:
         self.app = app
 
+    # Route each config or pattern error to the matching recovery flow.
     def handle(self, error: MazeConfigError | PatternError) -> bool:
         if isinstance(error, MazeWidthSizeError):
             self._handle_maze_width_size(error)
@@ -32,6 +35,10 @@ class ConfigErrorHandler:
 
         if isinstance(error, MazeHeightSizeError):
             self._handle_maze_height_size(error)
+            return True
+
+        if isinstance(error, MazeMinimumSizeError):
+            self._handle_maze_minimum_size(error)
             return True
 
         if isinstance(error, MazeSizeError):
@@ -63,12 +70,21 @@ class ConfigErrorHandler:
             return True
 
         if isinstance(error, PatternTooLargeError):
-            self.app.message = str(error)
+            self._stop_alert_with_message(error)
             return False
 
-        self.app.message = str(error)
+        self._stop_alert_with_message(error)
         return False
 
+    # Clear any active alert before returning control to a normal menu.
+    def _stop_alert_with_message(
+        self,
+        error: MazeConfigError | PatternError,
+    ) -> None:
+        self.app.alert = None
+        self.app.message = str(error)
+
+    # Prompt for a corrected maze width after a width validation error.
     def _handle_maze_width_size(self, error: MazeWidthSizeError) -> None:
         self.app.alert = (
             "Invalid configuration:\n"
@@ -82,6 +98,7 @@ class ConfigErrorHandler:
             "Please choose a new width as a positive integer: ", error,
         )
 
+    # Prompt for a corrected maze height after a height validation error.
     def _handle_maze_height_size(self, error: MazeHeightSizeError) -> None:
         self.app.alert = (
             "Invalid configuration:\n"
@@ -95,6 +112,29 @@ class ConfigErrorHandler:
             "Please choose a new height as a positive integer: ", error,
         )
 
+    # Prompt for new dimensions when the maze has fewer than two cells.
+    def _handle_maze_minimum_size(
+        self,
+        error: MazeMinimumSizeError,
+    ) -> None:
+        self.app.alert = (
+            "Invalid configuration:\n"
+            "\n"
+            f"Current WIDTH: {self.app.maze.width}\n"
+            f"Current HEIGHT: {self.app.maze.height}\n"
+            "\n"
+            f"{error}"
+        )
+
+        self.app.maze.width, self.app.maze.height = (
+            self._prompt_for_dimensions(
+                "Please choose maze dimensions of at least "
+                "2x1 or 1x2 as 'width,height': ",
+                error,
+            )
+        )
+
+    # Prompt for both maze dimensions when width and height are invalid.
     def _handle_maze_size(self, error: MazeSizeError) -> None:
         self.app.alert = (
             "Invalid configuration:\n"
@@ -111,6 +151,7 @@ class ConfigErrorHandler:
             )
         )
 
+    # Prompt for new entry and exit coordinates when they overlap.
     def _handle_maze_entry_exit_overlap(
         self,
         error: MazeEntryExitOverlapError,
@@ -132,6 +173,7 @@ class ConfigErrorHandler:
             "Please choose new exit coordinates as 'x,y': ", error,
         )
 
+    # Prompt for a new entry coordinate when it is outside the maze.
     def _handle_maze_entry_out_of_bounds(
         self,
         error: MazeEntryOutOfBoundsError,
@@ -148,6 +190,7 @@ class ConfigErrorHandler:
             "Please choose new entry coordinates as 'x,y': ", error,
         )
 
+    # Prompt for a new exit coordinate when it is outside the maze.
     def _handle_maze_exit_out_of_bounds(
         self,
         error: MazeExitOutOfBoundsError,
@@ -164,6 +207,7 @@ class ConfigErrorHandler:
             "Please choose new exit coordinates as 'x,y': ", error,
         )
 
+    # Prompt for a new entry coordinate when it overlaps the pattern.
     def _handle_pattern_entry_overlap(
         self,
         error: PatternEntryOverlapError,
@@ -183,6 +227,7 @@ class ConfigErrorHandler:
             "Please choose new entry coordinates as 'x,y': ", error,
         )
 
+    # Prompt for a new exit coordinate when it overlaps the pattern.
     def _handle_pattern_exit_overlap(
         self,
         error: PatternExitOverlapError,
@@ -202,6 +247,7 @@ class ConfigErrorHandler:
             "Please choose new exit coordinates as 'x,y': ", error,
         )
 
+    # Prompt for new entry and exit coordinates when both overlap the pattern.
     def _handle_pattern_overlap(self, error: PatternOverlapError) -> None:
         pattern_coords = self.app.generator.pattern.get_coords(self.app.maze)
 
@@ -223,6 +269,7 @@ class ConfigErrorHandler:
             "Please choose new exit coordinates as 'x,y': ", error,
         )
 
+    # Render a size prompt until the user enters a valid positive integer.
     def _prompt_for_size(
         self,
         prompt: str,
@@ -252,6 +299,7 @@ class ConfigErrorHandler:
 
             return size
 
+    # Parse a positive integer size, returning None for invalid input.
     def _parse_size(self, raw_size: str) -> int | None:
         try:
             size = int(raw_size.strip())
@@ -263,6 +311,8 @@ class ConfigErrorHandler:
 
         return size
 
+    # Render a dimensions prompt
+    # until the user enters valid width,height values.
     def _prompt_for_dimensions(
         self,
         prompt: str,
@@ -287,12 +337,13 @@ class ConfigErrorHandler:
                 self.app.message = (
                     "Invalid dimensions format.\n"
                     "Please use the format 'width,height' with "
-                    "positive integers."
+                    "positive integers and at least 2x1 or 1x2."
                 )
                 continue
 
             return dimensions
 
+    # Parse width,height text into valid maze dimensions.
     def _parse_dimensions(
         self,
         raw_dimensions: str,
@@ -311,8 +362,12 @@ class ConfigErrorHandler:
         if width is None or height is None:
             return None
 
+        if width < 2 and height < 2:
+            return None
+
         return width, height
 
+    # Render a coordinate prompt until the user enters in-bounds coordinates.
     def _prompt_for_coordinates(
         self,
         prompt: str,
@@ -352,6 +407,7 @@ class ConfigErrorHandler:
 
             return coordinates
 
+    # Parse x,y text into integer coordinates.
     def _parse_coordinates(
         self,
         raw_coordinates: str,
@@ -372,6 +428,7 @@ class ConfigErrorHandler:
 
         return x, y
 
+    # Check whether coordinates fit within the current maze bounds.
     def _is_inside_maze(self, coordinates: tuple[int, int]) -> bool:
         x, y = coordinates
 

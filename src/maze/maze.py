@@ -18,6 +18,10 @@ class MazeHeightSizeError(MazeSizeError):
     pass
 
 
+class MazeMinimumSizeError(MazeSizeError):
+    pass
+
+
 class MazeEntryExitOverlapError(MazeConfigError):
     pass
 
@@ -31,6 +35,7 @@ class MazeExitOutOfBoundsError(MazeConfigError):
 
 
 class Maze():
+    # Store the maze configuration and allocate the initial grid.
     def __init__(self, width: int, height: int,
                  entry: tuple[int, int], exit: tuple[int, int],
                  output_file: str, perfect: bool,
@@ -43,19 +48,21 @@ class Maze():
         self.perfect = perfect
         self.seed = seed
 
+        self.grid: list[list[Cell]] = []
         self.init_maze()
 
+    # Serialize the grid cells into the hexadecimal maze representation.
     def __str__(self) -> str:
-        lines = []
-        for line in self.grid:
+        lines: list[str] = []
+        for cell_line in self.grid:
             row = ""
-            for cell in line:
+            for cell in cell_line:
                 row += cell.get_hexa()
             lines.append(row)
-        lines = "\n".join(lines)
 
-        return lines
+        return "\n".join(lines)
 
+    # Validate maze dimensions and entry/exit coordinates before generation.
     def check_config(self) -> None:
         if self.width <= 0 and self.height <= 0:
             raise MazeSizeError(
@@ -69,6 +76,11 @@ class Maze():
         if self.height <= 0:
             raise MazeHeightSizeError(
                 "HEIGHT must be a positive integer."
+            )
+
+        if self.width < 2 and self.height < 2:
+            raise MazeMinimumSizeError(
+                "Maze must be at least 2x1 or 1x2."
             )
 
         if self.entry == self.exit:
@@ -91,15 +103,17 @@ class Maze():
             raise MazeExitOutOfBoundsError(
                 "EXIT coordinates are outside the maze bounds.")
 
-    def init_maze(self):
+    # Reset the grid to a fresh matrix of closed cells.
+    def init_maze(self) -> None:
         self.grid = []
 
-        for line in range(self.height):
-            line = []
+        for _ in range(self.height):
+            cell_line: list[Cell] = []
             for column in range(self.width):
-                line.append(Cell())
-            self.grid.append(line)
+                cell_line.append(Cell())
+            self.grid.append(cell_line)
 
+    # Check whether coordinates stay within the maze boundaries.
     def is_inside(self, x: int, y: int) -> bool:
         return not (
             x < 0 or y < 0
@@ -107,9 +121,11 @@ class Maze():
             or y >= self.height
         )
 
+    # Return the cell stored at the given maze coordinates.
     def get_cell(self, x: int, y: int) -> Cell:
         return self.grid[y][x]
 
+    # List the in-bounds neighbor cells around a coordinate.
     def get_adjacent_cells(self, x: int, y: int) -> list[tuple
                                                          [Side,
                                                           int, int]]:
@@ -123,6 +139,7 @@ class Maze():
 
         return adjacent_cells
 
+    # List neighboring cells that can still be carved during generation.
     def get_unvisited_adjacent_cells(self, x: int, y: int) -> list[tuple
                                                                    [Side,
                                                                     int, int]]:
@@ -136,6 +153,7 @@ class Maze():
 
         return unvisited_adjacent_cells
 
+    # Open a shared wall between a cell and its adjacent neighbor.
     def open_passage(self, x: int, y: int, wall: Side) -> None:
         if not self.is_inside(x, y):
             raise ValueError("You cannot reach anything outside the Maze!")
@@ -152,6 +170,7 @@ class Maze():
         adjacent_cell = self.get_cell(adj_x, adj_y)
         adjacent_cell.open_wall(wall.opposite())
 
+    # List neighbors reachable through already-open walls.
     def get_reachable_adjacent_cells(self, x: int, y: int) -> list[tuple
                                                                    [Side,
                                                                     int, int]]:
@@ -164,6 +183,7 @@ class Maze():
 
         return reachable_adjacent_cells
 
+    # Detect whether the maze contains any fully open 3x3 area.
     def has_3x3_open_area(self) -> bool:
 
         for y in range(self.height - 2):
@@ -174,6 +194,7 @@ class Maze():
 
         return False
 
+    # Check one 3x3 window for uninterrupted east and south passages.
     def found_3x3_open(self, start_x: int, start_y: int) -> bool:
         for dy in range(3):
             for dx in range(3):
@@ -193,6 +214,7 @@ class Maze():
 
         return True
 
+    # Close central walls inside open 3x3 areas to reduce empty blocks.
     def fix_3x3_areas(self) -> int:
         fix_count = 0
 

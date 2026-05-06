@@ -44,6 +44,7 @@ class PatternPosition(Enum):
 
 
 class Pattern:
+    # Initialize the fixed 42 pattern and its placement state.
     def __init__(
             self,
             position: PatternPosition = PatternPosition.CENTER
@@ -55,6 +56,7 @@ class Pattern:
         self.coords: list[tuple[int, int]] = []
         self.is_placed: bool = False
 
+    # Calculate the top-left coordinate for a pattern position in the maze.
     def get_start_coords(
         self,
         maze: Maze,
@@ -103,6 +105,7 @@ class Pattern:
 
         return start_x, start_y
 
+    # Translate the pattern bitmap into maze cell coordinates.
     def get_coords(
         self,
         maze: Maze,
@@ -119,6 +122,7 @@ class Pattern:
 
         return pattern_coords
 
+    # Ensure the pattern fits and does not cover entry or exit cells.
     def validate_placement(
         self,
         maze: Maze,
@@ -143,7 +147,11 @@ class Pattern:
                 "The exit cell overlaps the 42 pattern. "
             )
 
+    # Mark the pattern cells in the maze after validation succeeds.
     def place(self, maze: Maze) -> None:
+        self.coords = []
+        self.is_placed = False
+
         self.validate_placement(maze)
 
         self.coords = self.get_coords(maze)

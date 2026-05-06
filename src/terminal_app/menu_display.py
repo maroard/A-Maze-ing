@@ -1,9 +1,13 @@
+from terminal_app.screen_context import Command, CommandDict
+
+
 class MenuDisplay:
+    # Store all content needed to build a menu display.
     def __init__(
         self,
         width: int,
         title: str,
-        commands: dict,
+        commands: CommandDict,
         text: str | None = None,
         two_columns: bool = False,
         message: str | None = None,
@@ -19,6 +23,7 @@ class MenuDisplay:
         self.alert = alert
         self.prompt = prompt
 
+    # Compose the full menu box with title, body, footer, and prompt.
     def get_menu_display(self) -> str:
         if self.alert:
             body_display = self._get_alert_display()
@@ -44,6 +49,7 @@ class MenuDisplay:
             f"{prompt_display}"
         )
 
+    # Render alert text as wrapped menu rows.
     def _get_alert_display(self) -> str:
         if not self.alert:
             return ""
@@ -55,6 +61,7 @@ class MenuDisplay:
 
         return alert_display
 
+    # Build the non-alert menu body from optional text and commands.
     def _get_body_display(self) -> str:
         body_display = ""
 
@@ -65,6 +72,7 @@ class MenuDisplay:
 
         return body_display
 
+    # Render optional descriptive text above the command list.
     def _get_text_display(self) -> str:
         if not self.text:
             return ""
@@ -78,6 +86,7 @@ class MenuDisplay:
 
         return text_label
 
+    # Render menu commands and the mandatory back or quit entry.
     def _get_commands_display(self) -> str:
         items = self._get_menu_items()
 
@@ -93,14 +102,19 @@ class MenuDisplay:
 
         return commands_label
 
-    def _get_menu_items(self) -> list:
+    # Return command entries excluding the reserved zero command.
+    def _get_menu_items(self) -> list[tuple[str, Command]]:
         return [
             (key, value) for key, value
             in self.commands.items()
             if key != "0"
         ]
 
-    def _get_two_columns_commands(self, items: list) -> str:
+    # Format command entries into a two-column menu layout.
+    def _get_two_columns_commands(
+        self,
+        items: list[tuple[str, Command]],
+    ) -> str:
         left_width = self.width // 2
         right_width = self.width - left_width
 
@@ -126,7 +140,11 @@ class MenuDisplay:
 
         return commands_label
 
-    def _get_single_column_commands(self, items: list) -> str:
+    # Format command entries into a single-column menu layout.
+    def _get_single_column_commands(
+        self,
+        items: list[tuple[str, Command]],
+    ) -> str:
         commands_label = ""
 
         for key, value in items:
@@ -135,6 +153,7 @@ class MenuDisplay:
 
         return commands_label
 
+    # Build the menu footer and optional message section.
     def _get_footer_display(self) -> str:
         footer_display = ""
 
@@ -146,6 +165,7 @@ class MenuDisplay:
 
         return footer_display
 
+    # Render message text as wrapped footer rows.
     def _get_message_display(self) -> str:
         if not self.message:
             return ""
@@ -157,18 +177,21 @@ class MenuDisplay:
 
         return message_display
 
+    # Return the prompt displayed while an alert is active.
     def _get_alert_prompt_display(self) -> str:
         if self.prompt is not None:
             return self.prompt
 
         return "Press Enter to continue: "
 
+    # Return the normal menu prompt, using a custom prompt when provided.
     def _get_prompt_display(self) -> str:
         if self.prompt is not None:
             return self.prompt
 
         return f"Choice? (0-{len(self.commands) - 1}): "
 
+    # Wrap multiline text so it fits inside the menu box width.
     def _wrap_lines(self, text: str) -> list[str]:
         wrapped_lines: list[str] = []
 

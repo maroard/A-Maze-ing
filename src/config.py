@@ -25,6 +25,7 @@ REQUIRED_KEYS: set[str] = {
 }
 
 
+# Parse an integer config value and report the key on invalid input.
 def parse_positive_int(key: str, value: str) -> int:
     try:
         number = int(value)
@@ -34,6 +35,7 @@ def parse_positive_int(key: str, value: str) -> int:
     return number
 
 
+# Parse an x,y config value into integer coordinates.
 def parse_coords(key: str, value: str) -> tuple[int, int]:
     parts = value.split(",")
 
@@ -49,6 +51,7 @@ def parse_coords(key: str, value: str) -> tuple[int, int]:
     return x, y
 
 
+# Validate that the configured output path is a text file.
 def parse_output_file(value: str) -> str:
     if not value.endswith(".txt"):
         raise ValueError("Bad OUTPUT_FILE format. Must end with '.txt'.")
@@ -56,6 +59,7 @@ def parse_output_file(value: str) -> str:
     return value
 
 
+# Parse accepted boolean spellings from the config file.
 def parse_bool(value: str) -> bool:
     normalized = value.lower()
 
@@ -68,6 +72,7 @@ def parse_bool(value: str) -> bool:
     raise ValueError("'PERFECT' parameter must be a boolean!")
 
 
+# Dispatch a raw config value to the parser matching its key.
 def parse_config_value(key: str, value: str) -> ConfigValue:
     if key in {"WIDTH", "HEIGHT"}:
         return parse_positive_int(key, value)
@@ -87,6 +92,7 @@ def parse_config_value(key: str, value: str) -> ConfigValue:
     raise ValueError(f"Unknown config parameter was given: '{key}'")
 
 
+# Split one KEY=VALUE config line and reject malformed entries.
 def split_config_line(line: str) -> tuple[str, str]:
     equal_count = line.count("=")
 
@@ -110,6 +116,7 @@ def split_config_line(line: str) -> tuple[str, str]:
     return key, value
 
 
+# Ensure every mandatory config key was provided before maze creation.
 def validate_required_keys(config: dict[str, ConfigValue]) -> None:
     missing = REQUIRED_KEYS - set(config)
 
@@ -117,6 +124,7 @@ def validate_required_keys(config: dict[str, ConfigValue]) -> None:
         raise ValueError(f"{missing} parameters are missing in config file!")
 
 
+# Load meaningful config lines while ignoring blanks and comments.
 def read_config_lines(config_path: str) -> list[str]:
     with open(config_path) as f:
         raw_data = f.read()
@@ -132,6 +140,7 @@ def read_config_lines(config_path: str) -> list[str]:
     return lines
 
 
+# Build a typed config dictionary from validated config lines.
 def parse_config(lines: list[str]) -> Config:
     config: dict[str, ConfigValue] = {}
 
@@ -148,6 +157,7 @@ def parse_config(lines: list[str]) -> Config:
     return cast(Config, config)
 
 
+# Instantiate a Maze from the parsed configuration values.
 def create_maze(config: Config) -> Maze:
     return Maze(
         config["WIDTH"],
@@ -160,6 +170,7 @@ def create_maze(config: Config) -> Maze:
     )
 
 
+# Load, validate, and convert a config file into a Maze instance.
 def load_maze_from_config(config_path: str) -> Maze:
     lines = read_config_lines(config_path)
     config = parse_config(lines)

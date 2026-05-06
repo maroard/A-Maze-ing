@@ -8,6 +8,7 @@ if TYPE_CHECKING:
 
 
 class PatternPositionMenu(TerminalMenu):
+    # Create commands for each supported pattern position.
     def __init__(self, app: "MazeTerminalApp") -> None:
         self.app = app
 
@@ -60,6 +61,7 @@ class PatternPositionMenu(TerminalMenu):
             "0": (self.stop, "Back"),
         }
 
+    # Display pattern position choices and dispatch movement commands.
     def run(self) -> None:
         self.running = True
 
@@ -90,6 +92,7 @@ class PatternPositionMenu(TerminalMenu):
             action = command_data[0]
             action()
 
+    # Validate and apply a new pattern position before regenerating.
     def _move_pattern(self, position: PatternPosition) -> None:
         if position == self.app.generator.pattern.position:
             return
@@ -109,6 +112,7 @@ class PatternPositionMenu(TerminalMenu):
         self.app.generator.pattern.position = position
         self.app.generator.generate()
 
+    # Build a menu label showing a position name and its start coordinates.
     def _position_label(self, label: str, position: PatternPosition) -> str:
         coords = self.app.generator.pattern.get_start_coords(
             self.app.maze,

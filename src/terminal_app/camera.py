@@ -1,10 +1,12 @@
 class Camera:
+    # Initialize camera offsets and a minimal viewport size.
     def __init__(self) -> None:
         self.x = 0
         self.y = 0
         self.viewport_width = 1
         self.viewport_height = 1
 
+    # Center the viewport over a rendered maze grid.
     def set_to_center(
         self,
         render_grid_width: int,
@@ -19,14 +21,18 @@ class Camera:
         self.x = max((render_grid_width - viewport_render_width) // 2, 0)
         self.y = max((render_grid_height - viewport_render_height) // 2, 0)
 
+    # Move the camera upward without crossing the top edge.
     def move_up(self, step: int = 1) -> None:
         self.y = max(self.y - step, 0)
 
+    # Move the camera downward by the requested step.
     def move_down(self, step: int = 1) -> None:
         self.y += step
 
+    # Move the camera left without crossing the left edge.
     def move_left(self, step: int = 1) -> None:
         self.x = max(self.x - step, 0)
 
+    # Move the camera right by the requested step.
     def move_right(self, step: int = 1) -> None:
         self.x += step

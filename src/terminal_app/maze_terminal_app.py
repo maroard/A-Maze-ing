@@ -22,6 +22,7 @@ CommandDict = dict[str, Command]
 
 
 class MazeTerminalApp(TerminalMenu):
+    # Wire the maze, renderer, generator, camera, and top-level commands.
     def __init__(self, maze: Maze) -> None:
         self.maze = maze
         self.generator = MazeGenerator(maze)
@@ -56,6 +57,7 @@ class MazeTerminalApp(TerminalMenu):
         self.message: str | None = None
         self.alert: str | None = None
 
+    # Enter full-screen mode, generate the maze, and dispatch main commands.
     def run(self) -> None:
         self.running = True
         self._enter_terminal_screen()
@@ -86,6 +88,7 @@ class MazeTerminalApp(TerminalMenu):
         finally:
             self._leave_terminal_screen()
 
+    # Apply movement commands that can run from any menu screen.
     def handle_global_command(self, command: str) -> bool:
         actions_to_proceed: list[Callable[[], None]] = []
 
@@ -102,6 +105,7 @@ class MazeTerminalApp(TerminalMenu):
 
         return True
 
+    # Render the maze and menu while adapting to the current terminal size.
     def render_to_terminal(self, screen_context: ScreenContext) -> None:
         menu_display = ""
 
@@ -169,6 +173,7 @@ class MazeTerminalApp(TerminalMenu):
         stdout.write(screen)
         stdout.flush()
 
+    # Generate a new maze, refresh the viewport, and rewrite the output file.
     def regenerate_maze(self) -> None:
         if self.animate_generation and self.show_path:
             self.message = (
@@ -185,26 +190,32 @@ class MazeTerminalApp(TerminalMenu):
         with open(self.maze.output_file, "w") as file:
             file.write(get_output(self.maze))
 
+    # Toggle visibility of the solution path overlay.
     def _toggle_path(self) -> None:
         self.show_path = not self.show_path
 
+    # Open the options menu from the main screen.
     def _options_menu(self) -> None:
         menu = OptionsMenu(self)
         menu.run()
 
+    # Show the current configuration in the main menu message area.
     def _show_config(self) -> None:
         self.message = get_config_display(self.maze)
 
+    # Display the project credits in the message area.
     def _credits(self) -> None:
         self.message = (
             "This project has been created as part "
             "of the 42 curriculum by maroard and almanier"
         )
 
+    # Retry generation while recoverable config or pattern errors can be fixed.
     def generate_until_valid_config(
         self,
         animate_generation: bool,
     ) -> None:
+        self.alert = None
         render_on_frame = self._get_generation_callback(animate_generation)
 
         while True:
@@ -220,14 +231,17 @@ class MazeTerminalApp(TerminalMenu):
                 if not should_retry:
                     return
 
+    # Limit animation to small mazes so rendering stays smooth.
     def _should_animate_generation(self) -> bool:
         return self.maze.width <= 20 and self.maze.height <= 20
 
+    # Return a frame-rendering callback when generation animation is enabled.
     def _get_generation_callback(
         self,
         animate_generation: bool,
     ) -> Callable[[], None] | None:
         if animate_generation and self._should_animate_generation():
+            # Render one animation frame for the current generation step.
             def on_frame() -> None:
                 self.render_to_terminal(self._get_animation_screen_context())
 
@@ -235,6 +249,7 @@ class MazeTerminalApp(TerminalMenu):
 
         return None
 
+    # Build the screen context used by the main menu.
     def _get_main_screen_context(self) -> ScreenContext:
         return ScreenContext(
             menu_title="Main Menu",
@@ -243,11 +258,13 @@ class MazeTerminalApp(TerminalMenu):
             alert=self.alert,
         )
 
+    # Build a maze-only screen context for animated generation frames.
     def _get_animation_screen_context(self) -> ScreenContext:
         screen_context = self._get_main_screen_context()
         screen_context.show_menu = False
         return screen_context
 
+    # Create the boxed menu display for a screen context.
     def _get_menu_display(self, screen_context: ScreenContext) -> str:
         display = MenuDisplay(
             width=self.menu_width,
@@ -262,10 +279,12 @@ class MazeTerminalApp(TerminalMenu):
 
         return display.get_menu_display()
 
+    # Recompute viewport dimensions from the current main menu display.
     def _refresh_viewport_size(self, show_menu: bool = True) -> None:
         menu_display = self._get_menu_display(self._get_main_screen_context())
         self._update_viewport_size(menu_display, show_menu)
 
+    # Update camera viewport dimensions from terminal and menu sizes.
     def _update_viewport_size(
         self,
         menu_display: str,
@@ -283,12 +302,14 @@ class MazeTerminalApp(TerminalMenu):
         else:
             self.camera.viewport_height = terminal_height
 
+    # Return the rendered maze size after applying renderer scaling.
     def _get_maze_render_size(self) -> tuple[int, int]:
         maze_render_width = (2 * self.maze.width + 1) * self.renderer.x_scale
         maze_render_height = (2 * self.maze.height + 1) * self.renderer.y_scale
 
         return maze_render_width, maze_render_height
 
+    # Return the menu box size required for the current display.
     def _get_menu_render_size(self, menu_display: str) -> tuple[int, int]:
         menu_lines = menu_display.splitlines()
 
@@ -297,6 +318,7 @@ class MazeTerminalApp(TerminalMenu):
 
         return menu_width, menu_height
 
+    # Calculate the minimum terminal size needed for the requested screen.
     def _get_required_terminal_size(
         self,
         screen_context: ScreenContext,
@@ -329,6 +351,7 @@ class MazeTerminalApp(TerminalMenu):
 
         return required_width, required_height
 
+    # Pause rendering until the terminal is large enough for the interface.
     def _wait_for_terminal_size(
         self,
         min_width: int,
@@ -356,6 +379,7 @@ class MazeTerminalApp(TerminalMenu):
             stdout.flush()
             sleep(0.1)
 
+    # Pad each line to center a text block within a target width.
     def _center_text_block(self, text: str, target_width: int) -> str:
         lines = text.splitlines()
 
@@ -371,6 +395,7 @@ class MazeTerminalApp(TerminalMenu):
 
         return "\n".join(centered_lines)
 
+    # Center the camera around the currently rendered maze dimensions.
     def _center_camera(self) -> None:
         render_grid_width = 2 * self.maze.width + 1
         render_grid_height = 2 * self.maze.height + 1
@@ -382,6 +407,7 @@ class MazeTerminalApp(TerminalMenu):
             self.renderer.y_scale,
         )
 
+    # Switch to the alternate terminal screen and hide cursor affordances.
     def _enter_terminal_screen(self) -> None:
         stdout.write("\033[?1049h")
         stdout.write("\033[2J\033[H")
@@ -393,6 +419,7 @@ class MazeTerminalApp(TerminalMenu):
         stdout.write("\033[?1007l")
         stdout.flush()
 
+    # Restore terminal cursor state and leave the alternate screen.
     def _leave_terminal_screen(self) -> None:
         stdout.write("\033[?25h")
         stdout.write("\033[?1000l")

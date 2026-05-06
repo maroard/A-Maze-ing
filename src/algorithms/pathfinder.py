@@ -2,6 +2,7 @@ from maze.maze import Maze
 from maze.side import Side
 
 
+# Find the shortest route from entry to exit with breadth-first search.
 def get_shortest_path(maze: Maze) -> list[Side]:
     queue: list[tuple[int, int]] = []
     visited: set[tuple[int, int]] = set()
@@ -44,10 +45,12 @@ def get_shortest_path(maze: Maze) -> list[Side]:
     return path
 
 
+# Convert a path of directions into the compact output string.
 def get_path_string(path: list[Side]) -> str:
     return "".join(direction.to_char() for direction in path)
 
 
+# Expand a path of directions into the coordinates it visits.
 def get_path_coords(maze: Maze, path: list[Side]) -> list[tuple[int, int]]:
     current = maze.entry
     path_coords: list[tuple[int, int]] = []

@@ -44,16 +44,18 @@ class AnsiColor(Enum):
 
 
 class RenderTheme:
+    # Initialize the renderer theme from the default Candy palette.
     def __init__(self) -> None:
         default = self.candy()
-        self.name = default.name
-        self.wall = default.wall
-        self.void = default.void
-        self.entry = default.entry
-        self.exit = default.exit
-        self.pattern = default.pattern
-        self.path = default.path
+        self.name: str = default.name
+        self.wall: str = default.wall
+        self.void: str = default.void
+        self.entry: str = default.entry
+        self.exit: str = default.exit
+        self.pattern: str = default.pattern
+        self.path: str = default.path
 
+    # Build the Dark Classic color palette for maze rendering.
     @classmethod
     def dark_classic(cls) -> "RenderTheme":
         theme = object.__new__(cls)
@@ -68,6 +70,7 @@ class RenderTheme:
             AnsiColor.BG_LIGHT_BLUE.value + " " + AnsiColor.RESET.value)
         return theme
 
+    # Build the Neon Cyber color palette for maze rendering.
     @classmethod
     def neon_cyber(cls) -> "RenderTheme":
         theme = object.__new__(cls)
@@ -81,6 +84,7 @@ class RenderTheme:
         theme.path = AnsiColor.BG_YELLOW.value + " " + AnsiColor.RESET.value
         return theme
 
+    # Build the Purple Night color palette for maze rendering.
     @classmethod
     def purple_night(cls) -> "RenderTheme":
         theme = object.__new__(cls)
@@ -94,6 +98,7 @@ class RenderTheme:
             AnsiColor.BG_LIGHT_BLUE.value + " " + AnsiColor.RESET.value)
         return theme
 
+    # Build the Matrix color palette for maze rendering.
     @classmethod
     def matrix(cls) -> "RenderTheme":
         theme = object.__new__(cls)
@@ -108,6 +113,7 @@ class RenderTheme:
         theme.path = AnsiColor.BG_GOLD.value + " " + AnsiColor.RESET.value
         return theme
 
+    # Build the Lava color palette for maze rendering.
     @classmethod
     def lava(cls) -> "RenderTheme":
         theme = object.__new__(cls)
@@ -121,6 +127,7 @@ class RenderTheme:
         theme.path = AnsiColor.BG_MAGENTA.value + " " + AnsiColor.RESET.value
         return theme
 
+    # Build the Ice color palette for maze rendering.
     @classmethod
     def ice(cls) -> "RenderTheme":
         theme = object.__new__(cls)
@@ -133,6 +140,7 @@ class RenderTheme:
         theme.path = AnsiColor.BG_BLUE.value + " " + AnsiColor.RESET.value
         return theme
 
+    # Build the Clean Light color palette for maze rendering.
     @classmethod
     def clean_light(cls) -> "RenderTheme":
         theme = object.__new__(cls)
@@ -146,6 +154,7 @@ class RenderTheme:
         theme.path = AnsiColor.BG_BLUE.value + " " + AnsiColor.RESET.value
         return theme
 
+    # Build the Grayscale color palette for maze rendering.
     @classmethod
     def grayscale(cls) -> "RenderTheme":
         theme = object.__new__(cls)
@@ -159,6 +168,7 @@ class RenderTheme:
         theme.path = AnsiColor.BG_GRAY.value + " " + AnsiColor.RESET.value
         return theme
 
+    # Build the Ocean color palette for maze rendering.
     @classmethod
     def ocean(cls) -> "RenderTheme":
         theme = object.__new__(cls)
@@ -172,6 +182,7 @@ class RenderTheme:
         theme.path = AnsiColor.BG_BLUE.value + " " + AnsiColor.RESET.value
         return theme
 
+    # Build the Gold Mine color palette for maze rendering.
     @classmethod
     def gold_mine(cls) -> "RenderTheme":
         theme = object.__new__(cls)
@@ -184,6 +195,7 @@ class RenderTheme:
         theme.path = AnsiColor.BG_YELLOW.value + " " + AnsiColor.RESET.value
         return theme
 
+    # Build the Candy color palette for maze rendering.
     @classmethod
     def candy(cls) -> "RenderTheme":
         theme = object.__new__(cls)
@@ -198,6 +210,7 @@ class RenderTheme:
         theme.path = AnsiColor.BG_CYAN.value + " " + AnsiColor.RESET.value
         return theme
 
+    # Build the Midnight Sakura color palette for maze rendering.
     @classmethod
     def midnight_sakura(cls) -> "RenderTheme":
         theme = object.__new__(cls)

@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 
 
 class ConfigMenu(TerminalMenu):
+    # Create commands for editing each configurable maze value.
     def __init__(self, app: "MazeTerminalApp"):
         self.app = app
 
@@ -31,6 +32,7 @@ class ConfigMenu(TerminalMenu):
             "0": (self.stop, "Back")
         }
 
+    # Display the config menu and apply selected edits.
     def run(self) -> None:
         self.running = True
 
@@ -58,19 +60,20 @@ class ConfigMenu(TerminalMenu):
             action = command_data[0]
             action()
 
+    # Prompt, parse, apply, and regenerate after changing one config value.
     def _change_config_value(self, config_key: str) -> None:
         raw_value = self._prompt_for_config_value(config_key)
 
         try:
             value = parse_config_value(config_key, raw_value)
+            self._apply_config_value(config_key, value)
         except ValueError as error:
             self.app.message = str(error)
             return
 
-        self._apply_config_value(config_key, value)
-
         self.app.regenerate_maze()
 
+    # Build the right prompt for the config key being edited.
     def _prompt_for_config_value(self, config_key: str) -> str:
         self.app.message = f"Changing {config_key} value..."
 
@@ -87,7 +90,7 @@ class ConfigMenu(TerminalMenu):
 
         elif config_key == "OUTPUT_FILE":
             prompt = (
-                "Please choose a new output file ending with '.txt': ../"
+                "Please choose a new output filename ending with '.txt': ../"
             )
 
         elif config_key == "SEED":
@@ -111,24 +114,58 @@ class ConfigMenu(TerminalMenu):
 
         return input().strip()
 
+    # Write a parsed config value back onto the active maze object.
     def _apply_config_value(self, config_key: str, value: ConfigValue) -> None:
         if config_key == "WIDTH":
+            if not isinstance(value, int):
+                raise ValueError("WIDTH must be an integer.")
+
             self.app.maze.width = value
+
         elif config_key == "HEIGHT":
+            if not isinstance(value, int):
+                raise ValueError("HEIGHT must be an integer.")
+
             self.app.maze.height = value
+
         elif config_key == "ENTRY":
+            if not isinstance(value, tuple):
+                raise ValueError("ENTRY must be coordinates.")
+
             self.app.maze.entry = value
+
         elif config_key == "EXIT":
+            if not isinstance(value, tuple):
+                raise ValueError("EXIT must be coordinates.")
+
             self.app.maze.exit = value
+
         elif config_key == "OUTPUT_FILE":
+            if not isinstance(value, str):
+                raise ValueError("OUTPUT_FILE must be a filename.")
+
+            if "/" in value:
+                raise ValueError(
+                    "OUTPUT_FILE must be a filename, not a path."
+                )
+
             self.app.maze.output_file = f"../{value}"
+
         elif config_key == "SEED":
+            if not isinstance(value, int):
+                raise ValueError("SEED must be an integer.")
+
             self.app.maze.seed = value
 
+        else:
+            raise ValueError(f"Unknown config parameter: {config_key}")
+
+    # Toggle perfect maze generation and regenerate the maze.
     def _toggle_perfect_mode(self) -> None:
         self.app.maze.perfect = not self.app.maze.perfect
         self.app.regenerate_maze()
 
+    # Reload the original config file and regenerate from its values.
     def _reset_config(self) -> None:
         default_maze = load_maze_from_config(argv[1])
 

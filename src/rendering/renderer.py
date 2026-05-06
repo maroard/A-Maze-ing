@@ -7,6 +7,7 @@ from terminal_app.camera import Camera
 
 
 class MazeRenderer():
+    # Bind a maze and pattern to a renderer with the default theme and scale.
     def __init__(self, maze: Maze, pattern: Pattern) -> None:
         self.maze = maze
         self.pattern = pattern
@@ -15,6 +16,7 @@ class MazeRenderer():
         self.x_scale = 2
         self.y_scale = 1
 
+    # Render special cells, crop to the camera viewport, and scale the output.
     def get_viewport_render(
         self,
         camera: Camera,
@@ -41,6 +43,7 @@ class MazeRenderer():
 
         return self._scale_and_join(cropped_grid)
 
+    # Build a raw render grid from maze walls and open passages.
     def _create_maze_render_grid(self) -> list[list[str]]:
         render_width = 2 * self.maze.width + 1
         render_height = 2 * self.maze.height + 1
@@ -70,6 +73,7 @@ class MazeRenderer():
 
         return render_grid
 
+    # Draw optional overlays and fixed entry/exit markers on the grid.
     def _render_special_cells(
         self,
         render_grid: list[list[str]],
@@ -85,6 +89,7 @@ class MazeRenderer():
         self._draw_entry(render_grid)
         self._draw_exit(render_grid)
 
+    # Draw the pattern using either cell-only or solid styling.
     def _draw_pattern(
         self,
         render_grid: list[list[str]],
@@ -97,6 +102,7 @@ class MazeRenderer():
             for x, y in self.pattern.coords:
                 render_grid[2 * y + 1][2 * x + 1] = self.theme.pattern
 
+    # Expand pattern cells into connected render coordinates for solid style.
     def _get_solid_pattern_render_coords(self) -> list[tuple[int, int]]:
         pattern_coords = self.pattern.coords
         render_solid_pattern_coords: set[tuple[int, int]] = set()
@@ -117,10 +123,12 @@ class MazeRenderer():
 
         return list(render_solid_pattern_coords)
 
+    # Draw the solution path overlay onto the render grid.
     def _draw_path(self, render_grid: list[list[str]]) -> None:
         for x, y in self._get_path_render_coords():
             render_grid[y][x] = self.theme.path
 
+    # Convert the solution path into render-grid coordinates.
     def _get_path_render_coords(self) -> list[tuple[int, int]]:
         path_coords = get_path_coords(self.maze, get_shortest_path(self.maze))
         render_path_coords: list[tuple[int, int]] = []
@@ -147,14 +155,17 @@ class MazeRenderer():
 
         return render_path_coords
 
+    # Draw the entry marker at its render-grid coordinate.
     def _draw_entry(self, render_grid: list[list[str]]) -> None:
         entry_x, entry_y = self.maze.entry
         render_grid[2 * entry_y + 1][2 * entry_x + 1] = self.theme.entry
 
+    # Draw the exit marker at its render-grid coordinate.
     def _draw_exit(self, render_grid: list[list[str]]) -> None:
         exit_x, exit_y = self.maze.exit
         render_grid[2 * exit_y + 1][2 * exit_x + 1] = self.theme.exit
 
+    # Clamp the camera and crop the grid to the viewport dimensions.
     def _crop_render_grid(
         self,
         render_grid: list[list[str]],
@@ -183,6 +194,7 @@ class MazeRenderer():
 
         return cropped_grid
 
+    # Apply horizontal and vertical scale before joining lines for display.
     def _scale_and_join(self, render_grid: list[list[str]]) -> str:
         lines = []
 

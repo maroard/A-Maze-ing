@@ -8,6 +8,7 @@ if TYPE_CHECKING:
 
 
 class AnimationSpeedMenu(TerminalMenu):
+    # Create speed selection commands for generation animation.
     def __init__(self, app: "MazeTerminalApp"):
         self.app = app
 
@@ -39,6 +40,7 @@ class AnimationSpeedMenu(TerminalMenu):
             "0": (self.stop, "Back")
         }
 
+    # Display animation speed choices and dispatch the selected speed.
     def run(self) -> None:
         self.running = True
 
@@ -69,6 +71,7 @@ class AnimationSpeedMenu(TerminalMenu):
             action = command_data[0]
             action()
 
+    # Apply the selected animation speed label and frame delay.
     def _set_animation_speed(
         self,
         speed: GenerationAnimationSpeed

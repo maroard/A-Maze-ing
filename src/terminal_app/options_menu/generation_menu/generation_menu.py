@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 from terminal_app.terminal_menu import TerminalMenu
-from terminal_app.screen_context import ScreenContext
+from terminal_app.screen_context import CommandDict, ScreenContext
 from terminal_app.options_menu.generation_menu.animation_speed_menu import (
     AnimationSpeedMenu)
 
@@ -9,7 +9,8 @@ if TYPE_CHECKING:
 
 
 class GenerationMenu(TerminalMenu):
-    def __init__(self, app: "MazeTerminalApp"):
+    # Create generation settings commands for the menu.
+    def __init__(self, app: "MazeTerminalApp") -> None:
         self.app = app
 
         self.commands = {
@@ -22,6 +23,7 @@ class GenerationMenu(TerminalMenu):
             "0": (self.stop, "Back")
         }
 
+    # Display generation settings and dispatch selected changes.
     def run(self) -> None:
         self.running = True
 
@@ -74,8 +76,10 @@ class GenerationMenu(TerminalMenu):
             action = command_data[0]
             action()
 
-    def _get_commands(self):
-        commands = {
+    # Build the command list,
+    # including speed settings only when animation is on.
+    def _get_commands(self) -> CommandDict:
+        commands: CommandDict = {
             "1": (self._toggle_seed_usage,
                   "Toggle seed usage"),
             "2": (self._switch_generation_algorithm,
@@ -92,15 +96,19 @@ class GenerationMenu(TerminalMenu):
 
         return commands
 
+    # Toggle whether generation reseeds the random module from the maze seed.
     def _toggle_seed_usage(self) -> None:
         self.app.generator.seed_usage = not self.app.generator.seed_usage
 
+    # Swap the active generation algorithm to the alternate option.
     def _switch_generation_algorithm(self) -> None:
         self.app.generator.algorithms.reverse()
 
+    # Toggle animated rendering during maze generation.
     def _toggle_generation_animation(self) -> None:
         self.app.animate_generation = not self.app.animate_generation
 
-    def _animation_speed_menu(self):
+    # Open the animation speed menu.
+    def _animation_speed_menu(self) -> None:
         menu = AnimationSpeedMenu(self.app)
         menu.run()

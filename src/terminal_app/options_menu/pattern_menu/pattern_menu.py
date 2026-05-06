@@ -9,6 +9,7 @@ if TYPE_CHECKING:
 
 
 class PatternMenu(TerminalMenu):
+    # Create pattern style and position commands.
     def __init__(self, app: "MazeTerminalApp") -> None:
         self.app = app
 
@@ -20,6 +21,7 @@ class PatternMenu(TerminalMenu):
             "0": (self.stop, "Back")
         }
 
+    # Display pattern settings and dispatch selected changes.
     def run(self) -> None:
         self.running = True
 
@@ -54,9 +56,11 @@ class PatternMenu(TerminalMenu):
             action = command_data[0]
             action()
 
+    # Toggle between dotted and solid pattern rendering.
     def _toggle_solid_pattern(self) -> None:
         self.app.show_solid_pattern = not self.app.show_solid_pattern
 
+    # Open the pattern position submenu.
     def _pattern_position_menu(self) -> None:
         menu = PatternPositionMenu(self.app)
         menu.run()

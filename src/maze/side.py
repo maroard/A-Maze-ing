@@ -7,6 +7,7 @@ class Side(Enum):
     SOUTH = 4
     WEST = 8
 
+    # Return the wall on the opposite side of the current direction.
     def opposite(self) -> "Side":
         if self == Side.NORTH:
             return Side.SOUTH
@@ -17,6 +18,7 @@ class Side(Enum):
         else:
             return Side.EAST
 
+    # Return the coordinate offset produced by moving in this direction.
     def delta(self) -> tuple[int, int]:
         if self == Side.NORTH:
             return (0, -1)
@@ -27,6 +29,7 @@ class Side(Enum):
         else:
             return (-1, 0)
 
+    # Return the single-letter direction used in the solved path output.
     def to_char(self) -> str:
         if self == Side.NORTH:
             return 'N'

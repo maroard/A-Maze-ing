@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 
 
 class ColorsMenu(TerminalMenu):
+    # Create color and theme customization commands.
     def __init__(self, app: "MazeTerminalApp") -> None:
         self.app = app
 
@@ -33,6 +34,7 @@ class ColorsMenu(TerminalMenu):
             "0": (self.stop, "Back")
         }
 
+    # Display color settings and dispatch selected color submenus.
     def run(self) -> None:
         self.running = True
 
@@ -59,10 +61,12 @@ class ColorsMenu(TerminalMenu):
             action = command_data[0]
             action()
 
+    # Open the predefined theme selection menu.
     def _theme_menu(self) -> None:
         menu = ThemeMenu(self.app)
         menu.run()
 
+    # Open the target color menu when that target can be customized.
     def _color_menu(self, target: ThemeTarget) -> None:
         if target == "pattern" and not self.app.generator.pattern.is_placed:
             self.app.message = "Cannot change this color; no pattern detected."

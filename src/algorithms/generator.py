@@ -1,7 +1,7 @@
 from enum import Enum
 from maze.maze import Maze
 from maze.pattern import Pattern, PatternTooLargeError
-from typing import Callable
+from typing_extensions import Callable
 import random
 from time import sleep
 from maze.side import Side
@@ -15,6 +15,8 @@ class GenerationAnimationSpeed(Enum):
 
 
 class MazeGenerator():
+    # Bind generation state, pattern settings,
+    # and available algorithms to a maze.
     def __init__(self, maze: Maze):
         self.maze = maze
         self.pattern = Pattern()
@@ -29,6 +31,8 @@ class MazeGenerator():
             GenerationAnimationSpeed.HIGH.value
         )
 
+    # Reset the maze, place the pattern,
+    # and carve passages with the selected algorithm.
     def generate(
         self,
         render_on_frame: Callable[[], None] | None = None
@@ -56,6 +60,7 @@ class MazeGenerator():
         if pattern_error:
             raise pattern_error
 
+    # Carve the maze with randomized depth-first backtracking.
     def _generate_dfs(
         self,
         render_on_frame: Callable[[], None] | None = None
@@ -87,11 +92,12 @@ class MazeGenerator():
                     render_on_frame()
                     sleep(self.animation_frame_delay)
 
+    # Carve the maze with randomized Prim frontier expansion.
     def _generate_prim(
         self,
         render_on_frame: Callable[[], None] | None = None
     ) -> None:
-        frontier: tuple[int, int] = []
+        frontier: list[tuple[int, int]] = []
 
         x, y = self.maze.entry
         self.maze.get_cell(x, y).visited = True
@@ -145,6 +151,7 @@ class MazeGenerator():
                 render_on_frame()
                 sleep(self.animation_frame_delay)
 
+    # Open additional random walls when a non-perfect maze is requested.
     def add_extra_passages(
         self,
         extra_ratio: float,

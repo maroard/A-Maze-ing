@@ -494,8 +494,7 @@ Répartition des tâches:
   `Cell` et `Side`, gestion des erreurs de configuration, format de sortie
   hexadécimal, écriture du fichier de sortie, rendu terminal ANSI, thèmes et
   couleurs, caméra, affichage du plus court chemin, menus interactifs,
-  application principale `maze_terminal_app.py`, intégration de la génération dans
-  l'interface terminal, pattern 42, package réutilisable
+  intégration de la génération dans l'interface terminal, pattern 42, package réutilisable
   `mazegen_maroard_almanier`, packaging Python, Makefile, linting mypy/flake8
   et documentation du README.
 
@@ -512,7 +511,7 @@ Planning initial:
 Évolution du planning:
 
 - L'interface terminal est devenue plus grande que prévu, car elle avait besoin
-  de BEAUCOUP de menus et je voualais toujours en faire plus...
+  de BEAUCOUP de menus et je voulais toujours en faire plus...
 - `almanier`, arrivé un peu tard sur le projet a sû se rendre utile après avoir prit un peu de temps pour lui expliquer tout mon bordel, il a bien refactor la classe MazeGenerator et rajouté les features énoncées plus haut.
 
 Ce qui a bien fonctionné:

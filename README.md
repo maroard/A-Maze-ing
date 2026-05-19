@@ -494,7 +494,7 @@ Répartition des tâches:
   `Cell` et `Side`, gestion des erreurs de configuration, format de sortie
   hexadécimal, écriture du fichier de sortie, rendu terminal ANSI, thèmes et
   couleurs, caméra, affichage du plus court chemin, menus interactifs,
-  application principale `a_maze_ing.py`, intégration de la génération dans
+  application principale `maze_terminal_app.py`, intégration de la génération dans
   l'interface terminal, pattern 42, package réutilisable
   `mazegen_maroard_almanier`, packaging Python, Makefile, linting mypy/flake8
   et documentation du README.

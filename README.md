@@ -512,7 +512,7 @@ Planning initial:
 
 - L'interface terminal est devenue plus grande que prévu, car elle avait besoin
   de BEAUCOUP de menus et je voulais toujours en faire plus...
-- `almanier`, arrivé un peu tard sur le projet a sû se rendre utile après avoir prit un peu de temps pour lui expliquer tout mon bordel, il a bien refactor la classe MazeGenerator et rajouté les features énoncées plus haut.
+- `almanier`, arrivé un peu tard sur le projet a sû se rendre utile après avoir prit un peu de temps pour lui expliquer tout mon bordel, il a bien refactor la classe `MazeGenerator` et rajouté les features énoncées plus haut.
 
 Ce qui a bien fonctionné:
 

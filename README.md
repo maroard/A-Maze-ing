@@ -523,7 +523,7 @@ Ce qui a bien fonctionné:
 Ce qui pourrait être amélioré:
 
 - Une meilleure expérience utilisateur pour la compréhension de l'utilisation de la seed à l'intérieur de l'UI
-- Du découpage supplémentaire concernant la class principale du projet `MazeTerminalApp`
+- Du découpage supplémentaire concernant la classe principale du projet `MazeTerminalApp`
 - Une classe dédiée à la config
 - Une classe dédiée au pathfinding
 

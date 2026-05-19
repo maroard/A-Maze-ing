@@ -14,7 +14,6 @@ from terminal_app.camera import Camera
 from terminal_app.screen_context import ScreenContext
 from terminal_app.terminal_menu import TerminalMenu
 from terminal_app.options_menu.options_menu import OptionsMenu
-from terminal_app.config_display import get_config_display
 
 
 Command = tuple[Callable[[], None], str]
@@ -39,6 +38,7 @@ class MazeTerminalApp(TerminalMenu):
         self.show_solid_pattern = False
 
         self.global_commands: CommandDict = {
+            "C": (self._center_camera, "Center camera"),
             "W": (self.camera.move_up, "Move up"),
             "A": (self.camera.move_left, "Move left"),
             "S": (self.camera.move_down, "Move down"),
@@ -49,7 +49,7 @@ class MazeTerminalApp(TerminalMenu):
             "1": (self.regenerate_maze, "Generate a new Maze"),
             "2": (self._toggle_path, "Show/Hide path from entry to exit"),
             "3": (self._options_menu, "Options"),
-            "4": (self._show_config, "Show config"),
+            "4": (self._infos, "Infos"),
             "5": (self._credits, "Credits"),
             "0": (self.stop, "Quit"),
         }
@@ -199,15 +199,25 @@ class MazeTerminalApp(TerminalMenu):
         menu = OptionsMenu(self)
         menu.run()
 
-    # Show the current configuration in the main menu message area.
-    def _show_config(self) -> None:
-        self.message = get_config_display(self.maze)
+    # Show infos about global commands
+    def _infos(self) -> None:
+        self.message = (
+            "Camera commands:\n"
+            "\n"
+            "C: Center camera\n"
+            "W: Move up\n"
+            "A: Move left\n"
+            "S: Move down\n"
+            "D: Move right\n"
+            "\n"
+            "These commands can be used in all menus."
+        )
 
     # Display the project credits in the message area.
     def _credits(self) -> None:
         self.message = (
             "This project has been created as part "
-            "of the 42 curriculum by maroard and almanier"
+            "of the 42 curriculum by maroard and almanier."
         )
 
     # Retry generation while recoverable config or pattern errors can be fixed.

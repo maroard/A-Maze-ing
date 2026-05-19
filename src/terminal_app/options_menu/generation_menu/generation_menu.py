@@ -100,6 +100,10 @@ class GenerationMenu(TerminalMenu):
     def _toggle_seed_usage(self) -> None:
         self.app.generator.seed_usage = not self.app.generator.seed_usage
 
+        self.app.message = (
+            "You can change the seed in the configuration menu."
+        )
+
     # Swap the active generation algorithm to the alternate option.
     def _switch_generation_algorithm(self) -> None:
         self.app.generator.algorithms.reverse()

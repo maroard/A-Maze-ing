@@ -25,10 +25,8 @@ clean:
 	find . -type d -name ".mypy_cache" -exec rm -rf {} +
 	find . -type d -name ".pytest_cache" -exec rm -rf {} +
 	find . -type d -name ".ruff_cache" -exec rm -rf {} +
-	find . -maxdepth 1 -type d -name "*.egg-info" -exec rm -rf {} +
-	rm -rf build dist
-	rm -rf mazegen*.whl
-	rm -rf mazegen*.tar.gz
+	find . -type d -name "*.egg-info" -exec rm -rf {} +
+	rm -rf dist
 
 fclean: clean
 	rm -f maze.txt
@@ -37,14 +35,14 @@ re: fclean run
 
 lint:
 	cd $(SRC_DIR) && $(PYTHON) -m flake8 .
-	cd $(SRC_DIR) && $(PYTHON) -m mypy . --explicit-package-bases --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+	cd $(SRC_DIR) && $(PYTHON) -m mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 	$(PYTHON) -m flake8 $(PACKAGE_DIR)
-	$(PYTHON) -m mypy $(PACKAGE_DIR) --explicit-package-bases --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+	$(PYTHON) -m mypy $(PACKAGE_DIR) --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 lint-strict:
 	cd $(SRC_DIR) && $(PYTHON) -m flake8 .
-	cd $(SRC_DIR) && $(PYTHON) -m mypy . --strict --explicit-package-bases
+	cd $(SRC_DIR) && $(PYTHON) -m mypy . --strict
 
 	$(PYTHON) -m flake8 $(PACKAGE_DIR)
-	$(PYTHON) -m mypy $(PACKAGE_DIR) --strict --explicit-package-bases
+	$(PYTHON) -m mypy $(PACKAGE_DIR) --strict
